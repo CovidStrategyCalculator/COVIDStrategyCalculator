@@ -38,7 +38,8 @@ class Simulation {
     void collect_parameters(ParametersTab *parameters_tab);
     void collect_strategy(StrategyTab *strategy_tab);
     void deduce_combined_parameters();
-    Eigen::Vector<float, Model::n_compartments> initial_states;
+    Eigen::Vector<float, Model::n_compartments> initial_states_no_intervention;
+    Eigen::Vector<float, Model::n_compartments> initial_states_NPI;
     void set_initial_states();
     void apply_symptomatic_screening_to_initial_states();
 

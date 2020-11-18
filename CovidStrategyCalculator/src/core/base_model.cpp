@@ -56,11 +56,13 @@ void BaseModel::set_A() {
     Eigen::Matrix<float, n_compartments, n_compartments> A_augmented;
     A_augmented.fill(0);
     A_augmented(Eigen::seq(0, Eigen::last - 1), Eigen::seq(0, Eigen::last - 1)) = A_square;
-    A_augmented(Eigen::last, Eigen::seq(sub_compartments[0], sub_compartments[0] + sub_compartments[1] - 1)).array() =
-        1.;
-    A_augmented(Eigen::last, Eigen::seq(sub_compartments[0] + sub_compartments[1],
-                                        sub_compartments[0] + sub_compartments[1] + sub_compartments[2] - 1))
-        .array() = risk_posing_symptomatic_;
+
+    int first_infectious_compartment = sub_compartments[0];
+    int last_infectious_compartment = sub_compartments[0] + sub_compartments[1] + sub_compartments[2] - 1;
+    int first_symptomatic_compartment = sub_compartments[0] + sub_compartments[1];
+
+    A_augmented(Eigen::last, Eigen::seq(first_infectious_compartment, last_infectious_compartment)).array() = 1.;
+    A_augmented(first_symptomatic_compartment, first_symptomatic_compartment - 1) *= risk_posing_symptomatic_;
 
     this->A_ = A_augmented;
 }

@@ -8,7 +8,8 @@ Simulation::Simulation(ParametersTab *parameters_tab, StrategyTab *strategy_tab,
     deduce_combined_parameters();
 
     if ((mode == 2) && prevalence_tab->use_prevalence_estimation()) {
-        initial_states = prevalence_tab->initial_states(); // main simulation incoming travelers
+        initial_states_no_intervention = prevalence_tab->initial_states(); // main simulation incoming travelers
+        initial_states_NPI = prevalence_tab->initial_states();             // main simulation incoming travelers
 
         if (symptomatic_screening) {
             apply_symptomatic_screening_to_initial_states();
@@ -91,7 +92,8 @@ void Simulation::set_initial_states() {
     default:
         break;
     }
-    initial_states = X0;
+    initial_states_no_intervention = X0;
+    initial_states_NPI = X0;
 }
 
 void Simulation::apply_symptomatic_screening_to_initial_states() {
@@ -101,24 +103,25 @@ void Simulation::apply_symptomatic_screening_to_initial_states() {
     int first_symptomatic_compartment = Model::sub_compartments[0] + Model::sub_compartments[1];
     int last_symptomatic_compartment =
         Model::sub_compartments[0] + Model::sub_compartments[1] + Model::sub_compartments[2] - 1;
-    screening(Eigen::seq(first_symptomatic_compartment, last_symptomatic_compartment)).array() = fraction_asymptomatic;
+    screening(Eigen::seq(first_symptomatic_compartment, last_symptomatic_compartment)).array() =
+        risk_posing_fraction_symptomatic_phase;
 
-    initial_states.array() = screening.array() * initial_states.array();
+    initial_states_NPI.array() = screening.array() * initial_states_no_intervention.array();
 }
 
 void Simulation::create_different_scenario_models() {
     model_mean_case_no_intervention =
-        new Model(tau_mean_case, initial_states, t_end); // without tests or symptomatic screening
+        new Model(tau_mean_case, initial_states_no_intervention, t_end); // without tests or symptomatic screening
     model_best_case_no_intervention =
-        new Model(tau_best_case, initial_states, t_end); // without tests or symptomatic screening
+        new Model(tau_best_case, initial_states_no_intervention, t_end); // without tests or symptomatic screening
     model_worst_case_no_intervention =
-        new Model(tau_worst_case, initial_states, t_end); // without tests or symptomatic screening
+        new Model(tau_worst_case, initial_states_no_intervention, t_end); // without tests or symptomatic screening
 
-    model_mean_case_NPI = new Model(tau_mean_case, risk_posing_fraction_symptomatic_phase, initial_states, t_end,
+    model_mean_case_NPI = new Model(tau_mean_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
                                     t_test, test_sensitivity, test_specificity);
-    model_best_case_NPI = new Model(tau_best_case, risk_posing_fraction_symptomatic_phase, initial_states, t_end,
+    model_best_case_NPI = new Model(tau_best_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
                                     t_test, test_sensitivity, test_specificity);
-    model_worst_case_NPI = new Model(tau_worst_case, risk_posing_fraction_symptomatic_phase, initial_states, t_end,
+    model_worst_case_NPI = new Model(tau_worst_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
                                      t_test, test_sensitivity, test_specificity);
 
     // states per evaluation time
@@ -185,7 +188,7 @@ void Simulation::risk_no_intervention() {
     Eigen::VectorXf risk_no_intervention_worst;
 
     int n_eval = t_end + t_test.size() + 1;
-    Eigen::MatrixXf X0_proxy = initial_states;
+    Eigen::MatrixXf X0_proxy = initial_states_no_intervention;
     X0_proxy.resize(1, Model::n_compartments);
 
     // initialize risk_no_intervention vectors
@@ -215,12 +218,12 @@ void Simulation::risk_NPI() {
     Eigen::VectorXf risk_NPI_best;
     Eigen::VectorXf risk_NPI_worst;
 
-    risk_NPI_mean =
-        model_mean_case_NPI->integrate(strategy_states_mean) - strategy_states_mean(Eigen::all, Eigen::last);
-    risk_NPI_best =
-        model_best_case_NPI->integrate(strategy_states_best) - strategy_states_best(Eigen::all, Eigen::last);
-    risk_NPI_worst =
-        model_worst_case_NPI->integrate(strategy_states_worst) - strategy_states_worst(Eigen::all, Eigen::last);
+    risk_NPI_mean = model_mean_case_no_intervention->integrate(strategy_states_mean) -
+                    strategy_states_mean(Eigen::all, Eigen::last);
+    risk_NPI_best = model_best_case_no_intervention->integrate(strategy_states_best) -
+                    strategy_states_best(Eigen::all, Eigen::last);
+    risk_NPI_worst = model_worst_case_no_intervention->integrate(strategy_states_worst) -
+                     strategy_states_worst(Eigen::all, Eigen::last);
 
     Eigen::MatrixXf risk(risk_NPI_mean.size(), 3);
 
@@ -309,10 +312,3 @@ Eigen::VectorXf Simulation::evaluation_points_without_tests() {
     }
     return evaluation_points;
 }
-
-//     // TODO only used in prevalence estimator?
-//     // daily probability; needed for sensitivity assay
-//     daily_probability_per_phase_mean = group_by_phase(model_mean_case_NPI->run_no_test());
-//     daily_probability_per_phase_best = group_by_phase(model_best_case_NPI->run_no_test());
-//     daily_probability_per_phase_worst = group_by_phase(model_worst_case_NPI->run_no_test());
-// }

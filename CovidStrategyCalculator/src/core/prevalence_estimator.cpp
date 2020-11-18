@@ -69,7 +69,7 @@ void PrevalenceEstimator::estimate_prevalence(std::vector<float> weekly_incidenc
         cumulative_states_today_worst.array() +=
             X_worst(Eigen::seq(Eigen::last - 6, Eigen::last), Eigen::all).colwise().sum().array();
 
-        initial_states.fill(0.); // needed to set initial state of sink compartment back to zero
+        X0.fill(0.); // needed to set initial state of sink compartment back to zero
     }
 
     Eigen::VectorXf probability_per_phase_today_mean = group_by_phase(cumulative_states_today_mean);
