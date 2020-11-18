@@ -30,7 +30,7 @@ void ResultLog::write_row_result_log(Simulation *simulation) {
 
     this->insertRow(0);
 
-    std::map<int, std::string> mode_map_int{{0, "exposure"}, {1, "symptom onset"}, {2, "exposure"}};
+    std::map<int, std::string> mode_map_int{{0, "contact management"}, {1, "isolation"}, {2, "incoming travelers"}};
     this->setItem(0, 0, new QTableWidgetItem(QString(mode_map_int[simulation->get_mode()].c_str())));
 
     QString boolText = simulation->get_symptomatic_screening() ? "yes" : "no";
