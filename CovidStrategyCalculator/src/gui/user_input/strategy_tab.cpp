@@ -1,0 +1,182 @@
+#include "include/gui/user_input/strategy_tab.h"
+#include "include/gui/utils.h"
+
+#include <QGridLayout>
+#include <QLabel>
+
+StrategyTab::StrategyTab(QWidget *parent) : QWidget(parent) {
+    initialize_member_variables();
+    set_layout();
+}
+
+void StrategyTab::initialize_member_variables() {
+    mode_ = new QComboBox;
+    mode_->addItems(QStringList{"contact management", "isolation", "incoming travelers"});
+    mode_->setCurrentIndex(0);
+
+    test_type_ = new QComboBox;
+    test_type_->addItems(QStringList{"PCR", "Antigen"});
+    test_type_->setCurrentIndex(0);
+
+    p_infectious_t0_ = Utils::create_DoubleSpinBox(1, 0, 1, 3);
+    time_delay_ = Utils::create_SpinBox(0, 0, 21);
+    end_of_strategy_ = Utils::create_SpinBox(10, 0, 35);
+    expected_adherence_ = Utils::create_SpinBox(100, 0, 100);
+
+    use_symptomatic_screening_ = new QCheckBox;
+    use_symptomatic_screening_->setChecked(true);
+
+    test_days_box_ = new QGroupBox;
+    test_days_box_->setTitle(tr("Days to test on:"));
+    set_layout_test_days_box();
+
+    run_button_ = new QPushButton(tr("Run"));
+    run_button_->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+    connect(mode_, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        configure_options_based_on_mode(index);
+        emit mode_changed();
+    });
+    connect(time_delay_, QOverload<int>::of(&QSpinBox::valueChanged), [=]() { update_test_days_box(); });
+    connect(end_of_strategy_, QOverload<int>::of(&QSpinBox::valueChanged), [=]() { update_test_days_box(); });
+    connect(run_button_, &QPushButton::clicked, [=]() { emit run_simulation(); });
+}
+
+void StrategyTab::set_layout() {
+    QGridLayout *upper_grid_layout = new QGridLayout;
+    upper_grid_layout->addWidget(new QLabel(tr("Simulation mode: ")), 0, 0);
+    upper_grid_layout->addWidget(mode_, 0, 1, Qt::AlignLeft);
+    upper_grid_layout->addWidget(new QLabel(tr("Initial risk [%]: ")), 1, 0);
+    upper_grid_layout->addWidget(p_infectious_t0_, 1, 1, Qt::AlignLeft);
+    upper_grid_layout->addWidget(new QLabel(tr("Time passed since exposure/symptom onset [days]: ")), 2, 0);
+    upper_grid_layout->addWidget(time_delay_, 2, 1, Qt::AlignLeft);
+    upper_grid_layout->addWidget(new QLabel(tr("Duration of quarantine/isolation [days]: ")), 3, 0);
+    upper_grid_layout->addWidget(end_of_strategy_, 3, 1, Qt::AlignLeft);
+    upper_grid_layout->addWidget(new QLabel(tr("Use symptomatic screening: ")), 4, 0);
+    upper_grid_layout->addWidget(use_symptomatic_screening_, 4, 1, Qt::AlignLeft);
+    upper_grid_layout->addWidget(new QLabel(tr("Expected adherence [%]:")), 5, 0);
+    upper_grid_layout->addWidget(expected_adherence_, 5, 1, Qt::AlignLeft);
+
+    QLabel *logo = new QLabel;
+    logo->setPixmap(QPixmap((":/logo.jpg")));
+    upper_grid_layout->addWidget(logo, 0, 2, 3, 1);
+    QSpacerItem *space = new QSpacerItem(1, 1, QSizePolicy::Expanding);
+    upper_grid_layout->addItem(space, 0, 4, 1, 2, Qt::AlignLeft);
+
+    upper_grid_layout->setHorizontalSpacing(10);
+    upper_grid_layout->setSizeConstraint(QLayout::SetFixedSize);
+
+    QHBoxLayout *upper_layout = new QHBoxLayout;
+    upper_layout->addItem(upper_grid_layout);
+    upper_layout->addStretch();
+
+    QHBoxLayout *test_type_layout = new QHBoxLayout;
+    test_type_layout->addWidget(new QLabel(tr("Type of test: ")));
+    test_type_layout->addWidget(test_type_);
+    test_type_layout->addStretch();
+    test_type_layout->setSizeConstraint(QLayout::SetFixedSize);
+
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    main_layout->addItem(upper_layout);
+    main_layout->addWidget(test_days_box_);
+    main_layout->addItem(test_type_layout);
+    main_layout->addStretch();
+    main_layout->addWidget(run_button_);
+    main_layout->setSizeConstraint(QLayout::SetFixedSize);
+    main_layout->setAlignment(Qt::AlignTop);
+
+    this->setLayout(main_layout);
+}
+
+void StrategyTab::set_layout_test_days_box() {
+    QHBoxLayout *main_layout = new QHBoxLayout;
+    test_days_checkable_boxes.clear(); // clean sheet
+
+    int n = time_delay() + end_of_strategy() + 1;
+    for (int day = -time_delay(); day < n - time_delay(); ++day) {
+        QCheckBox *box = new QCheckBox;
+        if (day < 0) {
+            box->setEnabled(false);
+        } else {
+            test_days_checkable_boxes.push_back(box);
+            if (day < int(test_days_checkable_boxes_states.size())) {      // day was also part of previous strategy
+                box->setChecked(test_days_checkable_boxes_states.at(day)); // retain previous state
+            }
+        }
+
+        QVBoxLayout *vbox = new QVBoxLayout;
+        vbox->addWidget(box);
+        vbox->addWidget(new QLabel(QString::number(day)));
+        vbox->setAlignment(Qt::AlignTop);
+
+        main_layout->addItem(vbox);
+    }
+
+    main_layout->addStretch();
+    test_days_box_->setLayout(main_layout);
+    test_days_checkable_boxes_states.clear();
+    this->resize(sizeHint());
+}
+
+void StrategyTab::update_test_days_box() {
+    // save states of current strategy
+    for (auto box : test_days_checkable_boxes) {
+        test_days_checkable_boxes_states.push_back(box->isChecked());
+    }
+    // delete existing layout recursively
+    QLayout *layout = test_days_box_->layout();
+    while (!layout->isEmpty()) {
+        QLayout *vbox = layout->takeAt(0)->layout();
+        while (!vbox->isEmpty()) {
+            QWidget *element = vbox->takeAt(0)->widget();
+            delete element;
+        }
+        delete vbox;
+    }
+    delete layout;
+
+    test_days_box_->update();
+    set_layout_test_days_box();
+};
+
+void StrategyTab::configure_options_based_on_mode(int current_mode) {
+    switch (current_mode) {
+    case 0:
+        use_symptomatic_screening_->setChecked(true);
+        use_symptomatic_screening_->setEnabled(true);
+        p_infectious_t0_->setEnabled(true);
+        p_infectious_t0_->setValue(1);
+        time_delay_->setEnabled(true);
+        run_button_->setEnabled(true);
+        break;
+    case 1:
+        use_symptomatic_screening_->setChecked(false);
+        use_symptomatic_screening_->setEnabled(false);
+        p_infectious_t0_->setEnabled(true);
+        p_infectious_t0_->setValue(1);
+        time_delay_->setEnabled(true);
+        run_button_->setEnabled(true);
+        break;
+    case 2:
+        use_symptomatic_screening_->setChecked(true);
+        use_symptomatic_screening_->setEnabled(true);
+        p_infectious_t0_->setEnabled(false);
+        run_button_->setEnabled(false);
+        time_delay_->setEnabled(false);
+        time_delay_->setValue(0);
+        emit jump_to_prevalence_tab();
+        emit mode_is_2();
+        break;
+    }
+}
+
+// indices of placed tests; 0-indexed, also in case of non-zero time delay
+std::vector<int> StrategyTab::test_moments() const {
+    std::vector<int> v{};
+    for (int i = 0; i < (int)test_days_checkable_boxes.size(); ++i) {
+        if (test_days_checkable_boxes.at(i)->isChecked()) {
+            v.push_back(i);
+        }
+    }
+    return v;
+}
