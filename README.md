@@ -1,14 +1,20 @@
 # CovidStrategyCalculator
 A standalone GUI to assess SARS-CoV2 testing- and  quarantine  strategies for incoming travelers, contact person management and de-isolation.
 
-The CovidStrategyCalculator (CSC) calculates the residual risk, risk reduction and test efficacy for arbitrary testing and  quarantine strategies. Where risk is defined as the probability that an individual, who is released from quarantine/isolation, is- or may become infectious and potentially spread the disease.
+The COVIDStrategyCalculator (CSC) calculates the residual risk, risk reduction and test efficacy for arbitrary testing and  quarantine strategies. Where risk is defined as the probability that an individual, who is released from quarantine/isolation, is- or may become infectious and potentially spread the disease.
 
 Underneath, we implemented the analytical solution of a stochastic transit compartment model of the infection time course that captures published temporal changes and variability in test sensitivities, incubation- and infectious periods, as well as times to symptom onset. The infection time course is modeled using five compartments: a pre-detection phase (not infectious, negative PCR), a pre-symptomatic phase (infectious, positive PCR), a symptomatic infectious phase (positive PCR), a post-infectious phase (symptomatic, positive PCR) and a post-detection phase (not infectious, negative PCR).
 
 The software allows full flexibility with regards to parameter choices, that, for example, determine the time-course of infection, the proportion of asymptomatic cases and the test sensitivity and much more. However, a set of default parameters is provided, that has been carefully derived by fitting the model’s parameters to available clinical and in-house data on the incubation time, the off-set of infectiousness after symptom onset or peak virus load, as well as the time-dependent test sensitivities.
 
+## Download executables
+You can download the CSC as a pre-compiled executable. To download, click on the hyperlinks below.
+* [Linux](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/raw/main/executables/Linux/CovidStrategyCalculator)
+* [Windows](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/raw/main/executables/Windows/CovidStrategyCalculator.exe)
+* [MacOS](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/archive/main.zip), please see [the instructions for installation on MacOS](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/blob/main/resources/InstructionsMacOS.pdf)
+
 ## Software utilization
-![overview-image](images/overview.png)
+![overview-image](recources/overview.png)
 *Figure 1. Screenshot of CovidStrategyCalculator. A. The main window consists of four components: user input (1), a result log (2), time course trajectories (3) and test efficacy reports (4). Reported results include the pre-procedure risk (prevalence), post-procedure risk (residual risk) and fold risk reduction. B. Zoom-in on the strategy-related user input. C. Model parameter input tab. D. Prevalence estimator input tab.*
 
 The emphasis in software design has been put on combining ease-of-use with maximal flexibility.  Figure 1A shows a screenshot of the strategy evaluation window of the tool, where the user can define what he/she wants to analyse, e.g. an arbitrary strategy (1). Simulating a chosen strategy, will depict the results table (2) and graphics regarding the assay sensitivity and relative risk profile (3), as well as numeric values regarding the time-dependent assay sensitivity (4) to ease the selection of times to perform diagnostic tests.
@@ -25,7 +31,7 @@ In addition to these features, a user can  jump straight to the **prevalence est
 
 ## Building from source
 The CSC application can be compiled from source using the Qt5 framework. CSC requires the Eigen 3.3.7 library. When building from source, the path to the Eigen source code (root folder) has to be set in the
-`src/CovidTestCalculator.pro` file:
+`CovidStrategyCalculator/COVIDStrategyCalculator.pro` file:
 
 ```{c}
 INCLUDEPATH += path/to/eigen
