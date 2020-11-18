@@ -9,6 +9,7 @@ class EfficacyTable : public QTableWidget {
 
   public:
     explicit EfficacyTable(QWidget *parent = nullptr);
+    ~EfficacyTable() = default;
 
     void update(Simulation *simulation);
 };

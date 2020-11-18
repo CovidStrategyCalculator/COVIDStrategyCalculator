@@ -9,6 +9,7 @@ class ResultLog : public QTableWidget {
 
   public:
     explicit ResultLog(QWidget *parent = nullptr);
+    ~ResultLog() = default;
 
     void write_row_result_log(Simulation *simulation);
     bool event(QEvent *event);

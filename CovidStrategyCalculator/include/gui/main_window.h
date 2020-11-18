@@ -18,6 +18,7 @@ class MainWindow : public QMainWindow {
 
   public:
     explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow() = default;
 
   private slots:
     void update_plot(Simulation *simulation);

@@ -8,5 +8,7 @@ class PlotArea : public QtCharts::QChart {
     Q_OBJECT
 
   public:
+    PlotArea() = default;
     explicit PlotArea(Simulation *simulation);
+    ~PlotArea() = default;
 };

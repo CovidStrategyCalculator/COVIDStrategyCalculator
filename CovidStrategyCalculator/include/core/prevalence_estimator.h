@@ -14,8 +14,10 @@ class PrevalenceEstimator : public Simulation {
     Eigen::MatrixXf phase_probabilities_;
 
   public:
+    PrevalenceEstimator() = default;
     explicit PrevalenceEstimator(ParametersTab *parameters_tab,
                                  PrevalenceTab *prevalence_tab); // pre-simulation for prevalence estimator
+    ~PrevalenceEstimator() = default;
 
     Eigen::MatrixXf compartment_states() { return compartment_states_; }
     Eigen::MatrixXf phase_probabilities() { return phase_probabilities_; }

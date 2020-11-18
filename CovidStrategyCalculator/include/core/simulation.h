@@ -10,8 +10,10 @@
 class Simulation {
 
   public:
+    Simulation() = default;
     explicit Simulation(ParametersTab *parameters_tab);
     explicit Simulation(ParametersTab *parameters_tab, StrategyTab *strategy, PrevalenceTab *prevalence_tab);
+    ~Simulation() = default;
 
     Eigen::MatrixXf relative_risk();
     Eigen::MatrixXf risk_reduction();
