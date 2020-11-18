@@ -17,8 +17,8 @@ ResultLog::ResultLog(QWidget *parent) : QTableWidget(0, 11, parent) {
                                                    << "quarantine/\nisolation\n[days]"
                                                    << "test\n[days]"
                                                    << "test type"
-                                                   << "initial risk\n[%]"
-                                                   << "final risk\n[%]"
+                                                   << "P(infectious)\nstart"
+                                                   << "P(infectious)\nend"
                                                    << "risk reduction\n[%]"
                                                    << "fold risk\nreduction"));
 
@@ -61,21 +61,18 @@ void ResultLog::write_row_result_log(Simulation *simulation) {
         this->setItem(0, 6, new QTableWidgetItem());
     }
 
-    this->setItem(0, 7, new QTableWidgetItem(QString::number(simulation->get_p_infectious_t0() * 100, 'f', 2)));
+    this->setItem(0, 7, new QTableWidgetItem(QString::number(simulation->get_p_infectious_t0(), 'f', 2)));
 
-    Eigen::MatrixXf relative_risk = Utils::mid_min_max(simulation->relative_risk())(Eigen::last, Eigen::all);
     Eigen::MatrixXf risk_reduction = Utils::mid_min_max(simulation->risk_reduction())(Eigen::last, Eigen::all);
     Eigen::MatrixXf fold_risk_reduction =
         Utils::mid_min_max(simulation->fold_risk_reduction())(Eigen::last, Eigen ::all);
 
-    std::tuple<float, float, float> tmp;
-
-    float scaling_factor = simulation->get_p_infectious_t0() * 100.;
+    Eigen::VectorXf p_infectious_tend = simulation->get_p_infectious_tend();
 
     this->setItem(0, 8,
-                  new QTableWidgetItem(Utils::safeguard_probability(relative_risk(0, 0) * scaling_factor, 2) + " (" +
-                                       Utils::safeguard_probability(relative_risk(0, 1) * scaling_factor, 2) + ", " +
-                                       Utils::safeguard_probability(relative_risk(0, 2) * scaling_factor, 2) + ")"));
+                  new QTableWidgetItem(Utils::safeguard_probability(p_infectious_tend(0), 2) + " (" +
+                                       Utils::safeguard_probability(p_infectious_tend(1), 2) + ", " +
+                                       Utils::safeguard_probability(p_infectious_tend(2), 2) + ")"));
 
     this->setItem(0, 9,
                   new QTableWidgetItem(Utils::safeguard_probability(risk_reduction(0, 0) * 100., 2) + " (" +

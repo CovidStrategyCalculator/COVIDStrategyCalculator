@@ -31,6 +31,7 @@ class Simulation {
     int get_last_t() { return t_end - t_offset; }
     int get_test_type() { return test_type; }
     float get_p_infectious_t0() { return p_infectious_t0; }
+    Eigen::VectorXf get_p_infectious_tend();
     std::vector<int> get_t_test() { return t_test; };
 
   protected:

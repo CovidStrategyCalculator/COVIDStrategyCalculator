@@ -312,3 +312,13 @@ Eigen::VectorXf Simulation::evaluation_points_without_tests() {
     }
     return evaluation_points;
 }
+
+Eigen::VectorXf Simulation::get_p_infectious_tend() {
+    Eigen::VectorXf v(3);
+
+    v(0) = group_by_phase(strategy_states_mean)(Eigen::last, Eigen::seq(0, 2)).sum();
+    v(1) = group_by_phase(strategy_states_best)(Eigen::last, Eigen::seq(0, 2)).sum();
+    v(2) = group_by_phase(strategy_states_worst)(Eigen::last, Eigen::seq(0, 2)).sum();
+
+    return v;
+}
