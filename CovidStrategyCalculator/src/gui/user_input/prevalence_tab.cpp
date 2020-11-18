@@ -58,19 +58,19 @@ void PrevalenceTab::initialize_member_variables() {
     }
 
     connect(reports4_, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value) {
-        percent_of_population4_->setText(Utils::safeguard_output((float)value / 100000. * 100., 3) + "%");
+        percent_of_population4_->setText(Utils::safeguard_probability((float)value / 100000. * 100., 3) + "%");
     });
     connect(reports3_, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value) {
-        percent_of_population3_->setText(Utils::safeguard_output((float)value / 100000. * 100., 3) + "%");
+        percent_of_population3_->setText(Utils::safeguard_probability((float)value / 100000. * 100., 3) + "%");
     });
     connect(reports2_, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value) {
-        percent_of_population2_->setText(Utils::safeguard_output((float)value / 100000. * 100., 3) + "%");
+        percent_of_population2_->setText(Utils::safeguard_probability((float)value / 100000. * 100., 3) + "%");
     });
     connect(reports1_, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value) {
-        percent_of_population1_->setText(Utils::safeguard_output((float)value / 100000. * 100., 3) + "%");
+        percent_of_population1_->setText(Utils::safeguard_probability((float)value / 100000. * 100., 3) + "%");
     });
     connect(reports0_, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value) {
-        percent_of_population0_->setText(Utils::safeguard_output((float)value / 100000. * 100., 3) + "%");
+        percent_of_population0_->setText(Utils::safeguard_probability((float)value / 100000. * 100., 3) + "%");
     });
 }
 
@@ -203,25 +203,25 @@ void PrevalenceTab::update_layout() {
     Eigen::VectorXf min = ordered.col(1);
     Eigen::VectorXf max = ordered.col(2);
 
-    result_predetect_->setText(Utils::safeguard_output(mid[0], 3) + "%");
-    result_presympt_->setText(Utils::safeguard_output(mid[1], 3) + "%");
-    result_sympt_->setText(Utils::safeguard_output(mid[2], 3) + "%");
-    result_postinf_->setText(Utils::safeguard_output(mid[3], 3) + "%");
-    result_total_prevalence_->setText(Utils::safeguard_output(mid[0] + mid[1] + mid[2] + mid[3], 3) + "%");
-    result_inf_prevalence_->setText(Utils::safeguard_output(mid[0] + mid[1] + mid[2], 3) + "%");
+    result_predetect_->setText(Utils::safeguard_probability(mid[0], 3) + "%");
+    result_presympt_->setText(Utils::safeguard_probability(mid[1], 3) + "%");
+    result_sympt_->setText(Utils::safeguard_probability(mid[2], 3) + "%");
+    result_postinf_->setText(Utils::safeguard_probability(mid[3], 3) + "%");
+    result_total_prevalence_->setText(Utils::safeguard_probability(mid[0] + mid[1] + mid[2] + mid[3], 3) + "%");
+    result_inf_prevalence_->setText(Utils::safeguard_probability(mid[0] + mid[1] + mid[2], 3) + "%");
 
-    result_predetect_range_->setText("(" + Utils::safeguard_output(min[0], 3) + ", " +
-                                     Utils::safeguard_output(max[0], 3) + ")");
-    result_presympt_range_->setText("(" + Utils::safeguard_output(min[1], 3) + ", " +
-                                    Utils::safeguard_output(max[1], 3) + ")");
-    result_sympt_range_->setText("(" + Utils::safeguard_output(min[2], 3) + ", " + Utils::safeguard_output(max[2], 3) +
+    result_predetect_range_->setText("(" + Utils::safeguard_probability(min[0], 3) + ", " +
+                                     Utils::safeguard_probability(max[0], 3) + ")");
+    result_presympt_range_->setText("(" + Utils::safeguard_probability(min[1], 3) + ", " +
+                                    Utils::safeguard_probability(max[1], 3) + ")");
+    result_sympt_range_->setText("(" + Utils::safeguard_probability(min[2], 3) + ", " + Utils::safeguard_probability(max[2], 3) +
                                  ")");
-    result_postinf_range_->setText("(" + Utils::safeguard_output(min[3], 3) + ", " +
-                                   Utils::safeguard_output(max[3], 3) + ")");
-    result_total_prevalence_range_->setText("(" + Utils::safeguard_output(min[0] + min[1] + min[2] + min[3], 3) + ", " +
-                                            Utils::safeguard_output(max[0] + max[1] + max[2] + max[3], 3) + ")");
-    result_inf_prevalence_range_->setText("(" + Utils::safeguard_output(min[0] + min[1] + min[2], 3) + ", " +
-                                          Utils::safeguard_output(max[0] + max[1] + max[2], 3) + ")");
+    result_postinf_range_->setText("(" + Utils::safeguard_probability(min[3], 3) + ", " +
+                                   Utils::safeguard_probability(max[3], 3) + ")");
+    result_total_prevalence_range_->setText("(" + Utils::safeguard_probability(min[0] + min[1] + min[2] + min[3], 3) + ", " +
+                                            Utils::safeguard_probability(max[0] + max[1] + max[2] + max[3], 3) + ")");
+    result_inf_prevalence_range_->setText("(" + Utils::safeguard_probability(min[0] + min[1] + min[2], 3) + ", " +
+                                          Utils::safeguard_probability(max[0] + max[1] + max[2], 3) + ")");
 
     result_box_->setVisible(true);
 }

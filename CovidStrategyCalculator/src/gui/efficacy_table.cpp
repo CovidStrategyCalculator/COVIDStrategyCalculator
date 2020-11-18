@@ -29,9 +29,9 @@ void EfficacyTable::update(Simulation *simulation) {
 
     for (int i = 0; i < time.size(); ++i) {
         this->setItem(0, i,
-                      new QTableWidgetItem(Utils::safeguard_output(efficacy(i, 0), 3) + +"  (" +
-                                           Utils::safeguard_output(efficacy(i, 1), 3) + ", " +
-                                           Utils::safeguard_output(efficacy(i, 2), 3) + ")"));
+                      new QTableWidgetItem(Utils::safeguard_probability(efficacy(i, 0), 3) + +"  (" +
+                                           Utils::safeguard_probability(efficacy(i, 1), 3) + ", " +
+                                           Utils::safeguard_probability(efficacy(i, 2), 3) + ")"));
 
         this->item(0, i)->setFlags(this->item(0, i)->flags() & ~Qt::ItemIsEditable);
     }

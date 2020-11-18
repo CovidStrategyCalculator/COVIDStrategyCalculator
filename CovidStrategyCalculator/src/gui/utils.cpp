@@ -48,12 +48,18 @@ Eigen::MatrixXf Utils::mid_min_max(Eigen::MatrixXf matrix) {
     return result;
 }
 
-QString Utils::safeguard_output(float value, int precision) {
+QString Utils::safeguard_inf(float value, int precision) {
     QString rounded = QString::number(value, 'f', precision);
 
     if (rounded == QString("inf")) {
         return QString(">1e12");
     }
+    return rounded;
+}
+
+QString Utils::safeguard_probability(float value, int precision) {
+    QString rounded = QString::number(value, 'f', precision);
+
     switch (precision) {
     case 1:
         if (rounded == QString("0.0")) {
@@ -85,13 +91,23 @@ QString Utils::safeguard_output(float value, int precision) {
         } else
             return rounded;
     }
+    return rounded;
 }
 
-std::vector<QString> Utils::safeguard_output(Eigen::VectorXf values, int precision) {
+std::vector<QString> Utils::safeguard_probability(Eigen::VectorXf values, int precision) {
     std::vector<QString> v;
 
     for (int i = 0; i < values.size(); ++i) {
-        v.push_back(Utils::safeguard_output(values(i), precision));
+        v.push_back(Utils::safeguard_probability(values(i), precision));
+    }
+    return v;
+}
+
+std::vector<QString> Utils::safeguard_inf(Eigen::VectorXf values, int precision) {
+    std::vector<QString> v;
+
+    for (int i = 0; i < values.size(); ++i) {
+        v.push_back(Utils::safeguard_inf(values(i), precision));
     }
     return v;
 }

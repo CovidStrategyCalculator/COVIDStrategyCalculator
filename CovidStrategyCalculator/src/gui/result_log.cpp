@@ -73,19 +73,19 @@ void ResultLog::write_row_result_log(Simulation *simulation) {
     float scaling_factor = simulation->get_p_infectious_t0() * 100.;
 
     this->setItem(0, 8,
-                  new QTableWidgetItem(Utils::safeguard_output(relative_risk(0, 0) * scaling_factor, 2) + " (" +
-                                       Utils::safeguard_output(relative_risk(0, 1) * scaling_factor, 2) + ", " +
-                                       Utils::safeguard_output(relative_risk(0, 2) * scaling_factor, 2) + ")"));
+                  new QTableWidgetItem(Utils::safeguard_probability(relative_risk(0, 0) * scaling_factor, 2) + " (" +
+                                       Utils::safeguard_probability(relative_risk(0, 1) * scaling_factor, 2) + ", " +
+                                       Utils::safeguard_probability(relative_risk(0, 2) * scaling_factor, 2) + ")"));
 
     this->setItem(0, 9,
-                  new QTableWidgetItem(Utils::safeguard_output(risk_reduction(0, 0) * 100., 2) + " (" +
-                                       Utils::safeguard_output(risk_reduction(0, 1) * 100., 2) + ", " +
-                                       Utils::safeguard_output(risk_reduction(0, 2) * 100., 2) + ")"));
+                  new QTableWidgetItem(Utils::safeguard_probability(risk_reduction(0, 0) * 100., 2) + " (" +
+                                       Utils::safeguard_probability(risk_reduction(0, 1) * 100., 2) + ", " +
+                                       Utils::safeguard_probability(risk_reduction(0, 2) * 100., 2) + ")"));
 
     this->setItem(0, 10,
-                  new QTableWidgetItem(Utils::safeguard_output(fold_risk_reduction(0, 0), 2) + " (" +
-                                       Utils::safeguard_output(fold_risk_reduction(0, 1), 2) + ", " +
-                                       Utils::safeguard_output(fold_risk_reduction(0, 2), 2) + ")"));
+                  new QTableWidgetItem(Utils::safeguard_inf(fold_risk_reduction(0, 0), 2) + " (" +
+                                       Utils::safeguard_inf(fold_risk_reduction(0, 1), 2) + ", " +
+                                       Utils::safeguard_inf(fold_risk_reduction(0, 2), 2) + ")"));
 
     for (int i = 0; i < 11; ++i) {
         this->item(0, i)->setFlags(this->item(0, i)->flags() & ~Qt::ItemIsEditable);
