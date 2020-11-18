@@ -128,12 +128,16 @@ void Simulation::create_different_scenario_models() {
     strategy_states_mean = model_mean_case_NPI->run();
     strategy_states_best = model_best_case_NPI->run();
     strategy_states_worst = model_worst_case_NPI->run();
+
+    states_mean_no_intervention = model_mean_case_no_intervention->run();
+    states_best_no_intervention = model_best_case_no_intervention->run();
+    states_worst_no_intervention = model_worst_case_no_intervention->run();
 }
 
 Eigen::MatrixXf Simulation::temporal_assay_sensitivity() {
-    Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase(model_mean_case_no_intervention->run());
-    Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(model_best_case_no_intervention->run());
-    Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(model_worst_case_no_intervention->run());
+    Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase(states_mean_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(states_best_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(states_worst_no_intervention);
 
     float initial_population = daily_probability_per_phase_mean(0, Eigen::seq(0, 3)).sum(); // needed for scaling
                                                                                             // for incoming travelers
@@ -158,9 +162,9 @@ Eigen::MatrixXf Simulation::temporal_assay_sensitivity() {
 }
 
 Eigen::MatrixXf Simulation::test_efficacy() {
-    Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase(model_mean_case_no_intervention->run());
-    Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(model_best_case_no_intervention->run());
-    Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(model_worst_case_no_intervention->run());
+    Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase(states_mean_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(states_best_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(states_worst_no_intervention);
 
     Eigen::VectorXf infectious_mean = daily_probability_per_phase_mean(Eigen::all, Eigen::seq(1, 2)).rowwise().sum();
     Eigen::VectorXf infectious_best = daily_probability_per_phase_best(Eigen::all, Eigen::seq(1, 2)).rowwise().sum();

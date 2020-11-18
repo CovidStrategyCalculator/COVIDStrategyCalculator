@@ -58,6 +58,10 @@ class Simulation {
     Eigen::MatrixXf strategy_states_best;
     Eigen::MatrixXf strategy_states_worst;
 
+    Eigen::MatrixXf states_mean_no_intervention;
+    Eigen::MatrixXf states_best_no_intervention;
+    Eigen::MatrixXf states_worst_no_intervention;
+
     // parameters from strategy_tab
     std::vector<int> t_test{};
     int t_offset; // time delay
