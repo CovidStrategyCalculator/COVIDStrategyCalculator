@@ -1,8 +1,8 @@
 #include "include/core/model.h"
 
 Model::Model(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
-             Eigen::Vector<float, BaseModel::n_compartments> initial_states, int time, std::vector<int> test_indices,
-             float test_sensitivity, float test_specificity)
+             Eigen::VectorXf initial_states, int time, std::vector<int> test_indices, float test_sensitivity,
+             float test_specificity)
     : BaseModel(residence_times, risk_posing_fraction_symptomatic_phase, initial_states) {
     t_end = time;
     t_test = test_indices;
@@ -11,12 +11,11 @@ Model::Model(std::vector<float> residence_times, float risk_posing_fraction_symp
     set_false_ommision_rate();
 }
 
-Model::Model(std::vector<float> residence_times, Eigen::Vector<float, BaseModel::n_compartments> initial_states,
-             int time)
+Model::Model(std::vector<float> residence_times, Eigen::VectorXf initial_states, int time)
     : Model(residence_times, 1, initial_states, time, {}, .8, .9){};
 
 void Model::set_false_ommision_rate() {
-    Eigen::Vector<float, BaseModel::n_compartments> FOR;
+    Eigen::VectorXf FOR(Model::n_compartments);
     FOR.fill(1.);
 
     int counter = 0;
@@ -33,7 +32,7 @@ void Model::set_false_ommision_rate() {
 }
 
 Eigen::MatrixXf Model::run_no_test(int time) {
-    Eigen::MatrixXf states(BaseModel::n_compartments, time + 1);
+    Eigen::MatrixXf states(Model::n_compartments, time + 1);
 
     for (int i = 0; i < time + 1; ++i) {
         states.col(i) = this->run_base(i);
@@ -50,7 +49,7 @@ Eigen::MatrixXf Model::run_no_test() {
 
 Eigen::MatrixXf Model::run() {
     int n_eval_states = t_end + t_test.size() + 1;
-    Eigen::MatrixXf states(BaseModel::n_compartments, n_eval_states);
+    Eigen::MatrixXf states(Model::n_compartments, n_eval_states);
 
     int day_counter = 0;
     int next_idx = 0;

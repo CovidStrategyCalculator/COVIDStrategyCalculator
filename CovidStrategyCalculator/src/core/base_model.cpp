@@ -2,9 +2,10 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 const std::vector<int> BaseModel::sub_compartments = {5, 1, 13, 1, 1};
+const int BaseModel::n_compartments = 21;
 
 BaseModel::BaseModel(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
-                     Eigen::Vector<float, n_compartments> initial_states) {
+                     Eigen::Vector<float, BaseModel::n_compartments> initial_states) {
 
     tau_ = residence_times;
     risk_posing_symptomatic_ = risk_posing_fraction_symptomatic_phase;
@@ -16,7 +17,7 @@ BaseModel::BaseModel(std::vector<float> residence_times, float risk_posing_fract
 }
 
 void BaseModel::set_rates() {
-    Eigen::Vector<float, n_compartments> rates;
+    Eigen::Vector<float, BaseModel::n_compartments> rates;
     int counter = 0;
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < sub_compartments[i]; ++j) {
@@ -28,10 +29,10 @@ void BaseModel::set_rates() {
 }
 
 void BaseModel::set_S() {
-    Eigen::Matrix<float, n_compartments, n_compartments - 1> S;
+    Eigen::Matrix<float, BaseModel::n_compartments, BaseModel::n_compartments - 1> S;
     S.fill(0);
 
-    for (int i = 0; i < n_compartments - 1; ++i) {
+    for (int i = 0; i < BaseModel::n_compartments - 1; ++i) {
         S(i, i) = -1;
         S(i + 1, i) = 1;
     }
@@ -39,21 +40,21 @@ void BaseModel::set_S() {
 }
 
 void BaseModel::set_A() {
-    Eigen::Matrix<float, n_compartments, n_compartments - 1> rates_matrix;
+    Eigen::Matrix<float, BaseModel::n_compartments, BaseModel::n_compartments - 1> rates_matrix;
     rates_matrix.fill(0);
-    for (int i = 0; i < n_compartments; ++i) {
-        for (int j = 0; j < n_compartments - 1; ++j) {
+    for (int i = 0; i < BaseModel::n_compartments; ++i) {
+        for (int j = 0; j < BaseModel::n_compartments - 1; ++j) {
             rates_matrix(i, j) = rates_[j];
         }
     }
 
-    Eigen::Matrix<float, n_compartments, n_compartments - 1> A;
+    Eigen::Matrix<float, BaseModel::n_compartments, BaseModel::n_compartments - 1> A;
     A = S_.cwiseProduct(rates_matrix);
 
-    Eigen::Matrix<float, n_compartments - 1, n_compartments - 1> A_square;
+    Eigen::Matrix<float, BaseModel::n_compartments - 1, BaseModel::n_compartments - 1> A_square;
     A_square = A(Eigen::seq(0, Eigen::last - 1), Eigen::all); // drop last row, sink node not of interest
 
-    Eigen::Matrix<float, n_compartments, n_compartments> A_augmented;
+    Eigen::Matrix<float, BaseModel::n_compartments, BaseModel::n_compartments> A_augmented;
     A_augmented.fill(0);
     A_augmented(Eigen::seq(0, Eigen::last - 1), Eigen::seq(0, Eigen::last - 1)) = A_square;
 
@@ -70,7 +71,7 @@ void BaseModel::set_A() {
 Eigen::Vector<float, BaseModel::n_compartments> BaseModel::run_base(int time) { return (A_ * (float)time).exp() * X0; }
 
 Eigen::Vector<float, BaseModel::n_compartments>
-BaseModel::run_base(int time, Eigen::Vector<float, n_compartments> initial_states) {
+BaseModel::run_base(int time, Eigen::Vector<float, BaseModel::n_compartments> initial_states) {
     X0 = initial_states;
     return run_base(time);
 }

@@ -12,7 +12,7 @@ class Model : public BaseModel {
 
     float specificity{};
     float sensitivity{};
-    Eigen::Vector<float, BaseModel::n_compartments> false_ommision_rate;
+    Eigen::VectorXf false_ommision_rate;
     void set_false_ommision_rate();
 
     Eigen::MatrixXf run_no_test(int time);
@@ -20,12 +20,12 @@ class Model : public BaseModel {
   public:
     Model() = default;
     Model(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
-          Eigen::Vector<float, BaseModel::n_compartments> initial_states, int time, std::vector<int> test_indices,
-          float test_sensitivity, float test_specificity);
+          Eigen::VectorXf initial_states, int time, std::vector<int> test_indices, float test_sensitivity,
+          float test_specificity);
     ~Model() = default;
 
     // no test or symptomatic screening
-    Model(std::vector<float> residence_times, Eigen::Vector<float, BaseModel::n_compartments> initial_states, int time);
+    Model(std::vector<float> residence_times, Eigen::VectorXf initial_states, int time);
 
     Eigen::MatrixXf run();
     Eigen::MatrixXf run_no_test();
