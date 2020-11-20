@@ -25,7 +25,7 @@ void EfficacyTable::update(Simulation *simulation) {
     }
 
     this->setHorizontalHeaderLabels(h_labels);
-    this->setVerticalHeaderLabels((QStringList() << "P(infectious | true positive test)"));
+    this->setVerticalHeaderLabels((QStringList() << "P(infectious | positive test)"));
 
     for (int i = 0; i < time.size(); ++i) {
         this->setItem(0, i,

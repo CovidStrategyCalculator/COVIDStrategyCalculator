@@ -170,15 +170,30 @@ Eigen::MatrixXf Simulation::test_efficacy() {
     Eigen::VectorXf infectious_best = daily_probability_per_phase_best(Eigen::all, Eigen::seq(1, 2)).rowwise().sum();
     Eigen::VectorXf infectious_worst = daily_probability_per_phase_worst(Eigen::all, Eigen::seq(1, 2)).rowwise().sum();
 
-    float initial_population = daily_probability_per_phase_mean(0, Eigen::seq(0, 3)).sum(); // needed for scaling
-                                                                                            // for incoming travelers
+    Eigen::VectorXf ones(daily_probability_per_phase_mean.rows());
+    ones.fill(1);
 
-    Eigen::MatrixXf infectious(t_end + 1, 3);
-    infectious.col(0) = infectious_mean.array() / initial_population;
-    infectious.col(1) = infectious_best.array() / initial_population;
-    infectious.col(2) = infectious_worst.array() / initial_population;
+    Eigen::VectorXf p_PCR_positive_mean =
+        (1. - test_specificity) * daily_probability_per_phase_mean(Eigen::all, 0) +
+        test_sensitivity * daily_probability_per_phase_mean(Eigen::all, Eigen::seq(1, 3)).rowwise().sum() +
+        (1. - test_specificity) *
+            (ones - daily_probability_per_phase_mean(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
+    Eigen::VectorXf p_PCR_positive_best =
+        (1. - test_specificity) * daily_probability_per_phase_best(Eigen::all, 0) +
+        test_sensitivity * daily_probability_per_phase_best(Eigen::all, Eigen::seq(1, 3)).rowwise().sum() +
+        (1. - test_specificity) *
+            (ones - daily_probability_per_phase_best(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
+    Eigen::VectorXf p_PCR_positive_worst =
+        (1. - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 0) +
+        test_sensitivity * daily_probability_per_phase_worst(Eigen::all, Eigen::seq(1, 3)).rowwise().sum();
+    +(1. - test_specificity) * (ones - daily_probability_per_phase_worst(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
 
-    return (infectious * test_sensitivity).array() / temporal_assay_sensitivity().array();
+    Eigen::MatrixXf efficacy(t_end + 1, 3);
+    efficacy.col(0) = (infectious_mean * test_sensitivity).array() / p_PCR_positive_mean.array();
+    efficacy.col(1) = (infectious_best * test_sensitivity).array() / p_PCR_positive_best.array();
+    efficacy.col(2) = (infectious_worst * test_sensitivity).array() / p_PCR_positive_worst.array();
+
+    return efficacy;
 }
 
 void Simulation::run_risk_calculation() {
