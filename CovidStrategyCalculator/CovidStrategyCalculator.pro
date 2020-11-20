@@ -5,7 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CovidStrategyCalculator
 TEMPLATE = app
 
-INCLUDEPATH += ../../eigen
+INCLUDEPATH += submodules/eigen
 
 SOURCES += \
         main.cpp \
