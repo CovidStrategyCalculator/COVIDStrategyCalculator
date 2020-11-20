@@ -32,12 +32,12 @@ In the **isolation mode**, the user can test strategies for the duration of isol
 In addition to these features, a user can  jump straight to the **prevalence estimator**, field (7) in Figure 1B or freely change the models’ default parameters (clicking on field (6) in Figure 1B will show the window depicted in Figure 1C) to customize the model. Figure 1C shows the model parameter input tab. Uncertainty ranges are calculated based on the extreme parameter values provided by the user (15). The percentage of asymptomatic cases also be defined by the user (16).
 
 ## Building from source
-The CSC application can be compiled from source using the Qt5 framework. CSC requires the Eigen 3.3.7 library. When building from source, the path to the Eigen source code (root folder) has to be set in the
-`CovidStrategyCalculator/COVIDStrategyCalculator.pro` file:
+The CSC application can be compiled from source using the Qt5 framework. CSC requires the Eigen 3.3.7 library which is included as a submodule. When cloning the repository use the `--recursive` option, i.e:
 
-```{c}
-INCLUDEPATH += path/to/eigen
 ```
+git clone --recursive https://github.com/CovidStrategyCalculator/COVIDStrategyCalculator.git
+```
+
 ### Versions
 This application was developed using:
 * Eigen 3.3.7 (`https://gitlab.com/libeigen/eigen/-/releases#3.3.7`)
