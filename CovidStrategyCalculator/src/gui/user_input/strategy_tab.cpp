@@ -90,7 +90,7 @@ void StrategyTab::set_layout() {
 
 void StrategyTab::set_layout_test_days_box() {
     QHBoxLayout *main_layout = new QHBoxLayout;
-    test_days_checkable_boxes.clear(); // clean sheet
+    test_days_boxes.clear(); // clean sheet
 
     int n = time_delay() + end_of_strategy() + 1;
     for (int day = -time_delay(); day < n - time_delay(); ++day) {
@@ -98,11 +98,11 @@ void StrategyTab::set_layout_test_days_box() {
         if (day < 0) {
             box->setEnabled(false);
         } else {
-            test_days_checkable_boxes.push_back(box);
-            if (day < int(test_days_checkable_boxes_states.size())) {      // day was also part of previous strategy
-                box->setChecked(test_days_checkable_boxes_states.at(day)); // retain previous state
+            if (day < int(test_days_boxes_states.size())) {      // day was also part of previous strategy
+                box->setChecked(test_days_boxes_states.at(day)); // retain previous state
             }
         }
+        test_days_boxes.push_back(box);
 
         QVBoxLayout *vbox = new QVBoxLayout;
         vbox->addWidget(box);
@@ -114,14 +114,14 @@ void StrategyTab::set_layout_test_days_box() {
 
     main_layout->addStretch();
     test_days_box_->setLayout(main_layout);
-    test_days_checkable_boxes_states.clear();
+    test_days_boxes_states.clear();
     this->resize(sizeHint());
 }
 
 void StrategyTab::update_test_days_box() {
     // save states of current strategy
-    for (auto box : test_days_checkable_boxes) {
-        test_days_checkable_boxes_states.push_back(box->isChecked());
+    for (auto box : test_days_boxes) {
+        test_days_boxes_states.push_back(box->isChecked());
     }
     // delete existing layout recursively
     QLayout *layout = test_days_box_->layout();
@@ -173,8 +173,8 @@ void StrategyTab::configure_options_based_on_mode(int current_mode) {
 // indices of placed tests; 0-indexed, also in case of non-zero time delay
 std::vector<int> StrategyTab::test_moments() const {
     std::vector<int> v{};
-    for (int i = 0; i < (int)test_days_checkable_boxes.size(); ++i) {
-        if (test_days_checkable_boxes.at(i)->isChecked()) {
+    for (int i = 0; i < (int)test_days_boxes.size(); ++i) {
+        if (test_days_boxes.at(i)->isChecked()) {
             v.push_back(i);
         }
     }

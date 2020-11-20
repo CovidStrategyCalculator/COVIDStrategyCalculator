@@ -21,8 +21,8 @@ class StrategyTab : public QWidget {
     QComboBox *test_type_;
     QPushButton *run_button_;
 
-    std::vector<QCheckBox *> test_days_checkable_boxes{};
-    std::vector<bool> test_days_checkable_boxes_states{};
+    std::vector<QCheckBox *> test_days_boxes{};
+    std::vector<bool> test_days_boxes_states{};
     void set_layout_test_days_box();
     void update_test_days_box();
 
