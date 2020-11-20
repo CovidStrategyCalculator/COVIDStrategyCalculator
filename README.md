@@ -7,6 +7,8 @@ Underneath, we implemented the analytical solution of a stochastic transit compa
 
 The software allows full flexibility with regards to parameter choices, that, for example, determine the time-course of infection, the proportion of asymptomatic cases and the test sensitivity and much more. However, a set of default parameters is provided, that has been carefully derived by fitting the model’s parameters to available clinical and in-house data on the incubation time, the off-set of infectiousness after symptom onset or peak virus load, as well as the time-dependent test sensitivities.
 
+For further details on the scientific methods and results we refer to the article, which can be found [here](https://doi.org/10.1101/2020.11.18.20233825).
+
 ## Download executables
 You can download the CSC as a pre-compiled executable. To download, click on the hyperlinks below.
 * [Linux](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/raw/main/executables/Linux/CovidStrategyCalculator)
@@ -14,7 +16,7 @@ You can download the CSC as a pre-compiled executable. To download, click on the
 * [MacOS](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/archive/main.zip), please see [the instructions for installation on MacOS](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/blob/main/resources/InstructionsMacOS.pdf)
 
 ## Software utilization
-![overview-image](recources/overview.png)
+![overview-image](resources/overview.png)
 *Figure 1. Screenshot of CovidStrategyCalculator. A. The main window consists of four components: user input (1), a result log (2), time course trajectories (3) and test efficacy reports (4). Reported results include the pre-procedure risk (prevalence), post-procedure risk (residual risk) and fold risk reduction. B. Zoom-in on the strategy-related user input. C. Model parameter input tab. D. Prevalence estimator input tab.*
 
 The emphasis in software design has been put on combining ease-of-use with maximal flexibility.  Figure 1A shows a screenshot of the strategy evaluation window of the tool, where the user can define what he/she wants to analyse, e.g. an arbitrary strategy (1). Simulating a chosen strategy, will depict the results table (2) and graphics regarding the assay sensitivity and relative risk profile (3), as well as numeric values regarding the time-dependent assay sensitivity (4) to ease the selection of times to perform diagnostic tests.
