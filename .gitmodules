@@ -1,0 +1,3 @@
+[submodule "CovidStrategyCalculator/submodules/eigen"]
+	path = CovidStrategyCalculator/submodules/eigen
+	url = https://gitlab.com/libeigen/eigen.git
