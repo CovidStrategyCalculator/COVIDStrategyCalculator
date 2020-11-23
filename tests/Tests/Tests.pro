@@ -3,18 +3,19 @@ QT += testlib         #Include QtTest to use SignalSpy, QTest::mouseClick, etc
 TARGET = Tests
 TEMPLATE = app
 
-CONFIG +=
+CONFIG += \
        c++17 \
        cmdline \
-       testcase    #Creates 'check' target in Makefile.
+       testcase
 CONFIG -= debug_and_release
 
 include(../GoogleTest/GoogleTest.pri)
 
-INCLUDEPATH += ../../
+INCLUDEPATH += \
+            ../../CovidStrategyCalculator \
+            ../../CovidStrategyCalculator/submodules/eigen
 
 HEADERS +=
 
-SOURCES +=
-        main.cpp \
+SOURCES += \
         core/base_model_test.cpp
