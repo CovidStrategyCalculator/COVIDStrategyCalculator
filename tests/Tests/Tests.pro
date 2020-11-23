@@ -17,3 +17,4 @@ HEADERS +=
 
 SOURCES +=
         main.cpp \
+        core/base_model_test.cpp
