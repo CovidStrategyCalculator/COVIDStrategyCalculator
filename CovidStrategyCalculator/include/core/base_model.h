@@ -6,8 +6,8 @@
 class BaseModel {
 
   public:
-    static const std::vector<int> sub_compartments; //{5, 1, 13, 1, 1} defined in cpp
-    static const int n_compartments;
+    inline static const std::vector<int> sub_compartments = {5, 1, 13, 1, 1}; // defined in cpp
+    inline static const int n_compartments = 21;
 
     BaseModel() = default;
     BaseModel(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,

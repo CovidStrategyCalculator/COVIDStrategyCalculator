@@ -1,8 +1,8 @@
 #include "include/core/base_model.h"
 #include <unsupported/Eigen/MatrixFunctions>
 
-const std::vector<int> BaseModel::sub_compartments = {5, 1, 13, 1, 1};
-const int BaseModel::n_compartments = 21;
+// std::vector<int> BaseModel::sub_compartments = {5, 1, 13, 1, 1};
+// int BaseModel::n_compartments = 21;
 
 BaseModel::BaseModel(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
                      Eigen::Vector<float, BaseModel::n_compartments> initial_states) {
