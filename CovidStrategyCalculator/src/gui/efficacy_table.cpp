@@ -4,7 +4,6 @@
 #include <QHeaderView>
 
 EfficacyTable::EfficacyTable(QWidget *parent) : QTableWidget(parent) {
-    this->setMinimumHeight(0);
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     connect(this->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this, SLOT(resizeRowsToContents()));
 }

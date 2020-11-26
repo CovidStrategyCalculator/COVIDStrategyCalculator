@@ -42,8 +42,6 @@ PlotArea::PlotArea(Simulation *simulation) : QtCharts::QChart(nullptr) {
     QtCharts::QLineSeries *risk_high = new QtCharts::QLineSeries;
     risk_mean->setName("Relative risk");
 
-    // auto scaled = scale_risk_trajectories(mean, best_case, worst_case);
-
     for (int j = 0; j < risk.rows(); ++j) {
         risk_mean->append(time_risk[j], risk(j, 0));
         risk_low->append(time_risk[j], risk(j, 1));
@@ -92,8 +90,13 @@ PlotArea::PlotArea(Simulation *simulation) : QtCharts::QChart(nullptr) {
     QFont f("Helvetica", 10);
     this->legend()->setFont(f);
 
-    this->layout()->setContentsMargins(0, 0, 0, 0);
-    this->setBackgroundRoundness(0);
+    QFont font;
+    font.setPixelSize(12);
+    axisX->setLabelsFont(font);
+    axisY->setLabelsFont(font);
+    axisY2->setLabelsFont(font);
 
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    axisX->setTitleFont(font);
+    axisY->setTitleFont(font);
+    axisY2->setTitleFont(font);
 }

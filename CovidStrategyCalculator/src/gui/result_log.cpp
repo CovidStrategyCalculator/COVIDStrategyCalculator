@@ -8,8 +8,6 @@
 #include <QKeyEvent>
 
 ResultLog::ResultLog(QWidget *parent) : QTableWidget(0, 11, parent) {
-
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setHorizontalHeaderLabels((QStringList() << "mode"
                                                    << "sympt screening\n(perc asympt)"
                                                    << "adherence\n[%]"
@@ -23,6 +21,7 @@ ResultLog::ResultLog(QWidget *parent) : QTableWidget(0, 11, parent) {
                                                    << "fold risk\nreduction"));
 
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->horizontalHeader()->setStyleSheet("QHeaderView { font-size: 8pt; }");
     connect(this->horizontalHeader(), SIGNAL(sectionResized(int, int, int)), this, SLOT(resizeRowsToContents()));
 }
 
