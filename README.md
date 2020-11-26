@@ -9,6 +9,10 @@ The software allows full flexibility with regards to parameter choices, that, fo
 
 For further details on the scientific methods and results we refer to the article, which can be found [here](https://doi.org/10.1101/2020.11.18.20233825).
 
+## Use the web version
+The online version of the COVIDStrategyCalculator can be found [here](https://CovidStrategyCalculator.github.io).
+The web version is best used on a full-sized screen (desktop/laptop).
+
 ## Download executables
 You can download the CSC as a pre-compiled executable. To download, click on the hyperlinks below.
 * [Linux](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/raw/main/executables/Linux/CovidStrategyCalculator)
