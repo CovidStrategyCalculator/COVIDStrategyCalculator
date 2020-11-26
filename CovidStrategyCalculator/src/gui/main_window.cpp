@@ -12,9 +12,16 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     QSize size = QDesktopWidget().availableGeometry(this).size();
-
     int height = size.height();
     int width = size.width();
+
+    bool flip_layout = false;
+    if (height > width) {
+        flip_layout = true;
+        int tmp = height;
+        height = width;
+        width = tmp;
+    }
 
     QFont new_font = QDesktopWidget().font();
     new_font.setPointSize(8);
@@ -26,12 +33,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         round(0.85 * input_container->minimumSizeHint().width()); // 85% to correct for exessive padding of QTabWidget
     int input_container_height =
         round(0.85 * input_container->minimumSizeHint().height()); // 85% to correct for exessive padding of QTabWidget
-
     input_container->setMinimumSize(input_container_width, input_container_height);
     input_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     this->result_log = new ResultLog;
-    result_log->setMinimumSize(round(.98 * width) - input_container_width, input_container_height);
+    int horizontal_width_result_log = round(.98 * width) - input_container_width;
+    /* edge case; screen width is greater than screen height, but width is not sufficient to show both the input
+     * container and the result log alongside each other
+     */
+    if (horizontal_width_result_log < round(.5 * input_container_width)) {
+        flip_layout = true;
+        horizontal_width_result_log = width;
+    }
+    result_log->setMinimumSize(horizontal_width_result_log, input_container_height);
     result_log->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     this->chart_view = new QtCharts::QChartView;
@@ -49,23 +63,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         update_efficacy_table(simulation);
     });
 
-    QHBoxLayout *upper_layout = new QHBoxLayout;
-    upper_layout->addWidget(input_container);
-    upper_layout->addWidget(result_log);
-    upper_layout->addStretch();
-
-    QVBoxLayout *lower_layout = new QVBoxLayout;
-    lower_layout->setContentsMargins(0, 0, 0, 0);
-    lower_layout->setSpacing(0);
-    lower_layout->addWidget(chart_view);
-    lower_layout->addWidget(efficacy_table);
-    lower_layout->addStretch();
-
     QVBoxLayout *main_layout = new QVBoxLayout;
-    main_layout->addItem(upper_layout);
-    main_layout->addItem(lower_layout);
-    main_layout->addStretch();
+    if (flip_layout) {
+        main_layout->addWidget(input_container);
+        main_layout->addWidget(result_log);
+        main_layout->addWidget(chart_view);
+        main_layout->addWidget(efficacy_table);
+        main_layout->setContentsMargins(0, 0, 0, 0);
+        main_layout->setSpacing(0);
+        main_layout->addStretch();
+    } else {
+        QHBoxLayout *upper_layout = new QHBoxLayout;
+        upper_layout->addWidget(input_container);
+        upper_layout->addWidget(result_log);
+        upper_layout->addStretch();
 
+        QVBoxLayout *lower_layout = new QVBoxLayout;
+        lower_layout->setContentsMargins(0, 0, 0, 0);
+        lower_layout->setSpacing(0);
+        lower_layout->addWidget(chart_view);
+        lower_layout->addWidget(efficacy_table);
+        lower_layout->addStretch();
+
+        main_layout->addItem(upper_layout);
+        main_layout->addItem(lower_layout);
+        main_layout->addStretch();
+    }
     QWidget *central_widget = new QWidget;
     central_widget->setGeometry(QRect(0, 0, width, height));
     central_widget->setLayout(main_layout);
