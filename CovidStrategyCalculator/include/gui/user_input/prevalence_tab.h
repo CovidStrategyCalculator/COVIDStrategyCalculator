@@ -84,6 +84,5 @@ class PrevalenceTab : public QWidget {
     void all_boxes_are_unchecked();
     void disable_main_run_button();
     void enable_main_run_button();
-    void jump_to_strategy_tab();
     void run_prevalence_estimator();
 };

@@ -23,8 +23,9 @@ InputContainer::InputContainer(QWidget *parent) : QTabWidget(parent) {
         strategy_tab->set_mode(2); // in case it wasn't yet
                                    //(in prevalence tab because clicked in tab menu; not by changing mode)
         strategy_tab->set_p_infectious_t0(prevalence_tab->p_infectious_t0());
+        this->setCurrentIndex(0);
+        strategy_tab->enable_run_button();
     });
-    connect(prevalence_tab, &PrevalenceTab::jump_to_strategy_tab, [=]() { this->setCurrentIndex(0); });
     connect(prevalence_tab, &PrevalenceTab::all_boxes_are_unchecked, [=]() {
         if (strategy_tab->mode() == 2) {
             strategy_tab->disable_run_button();

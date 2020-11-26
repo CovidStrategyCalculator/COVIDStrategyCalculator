@@ -86,11 +86,10 @@ void PrevalenceTab::state_of_use_checkbox_changed() {
             use_prevalence_estimation_ = true;
             emit use_checkbox_checked();
             emit enable_main_run_button();
-            emit jump_to_strategy_tab();
         }
     }
-    if (((use_for_main_simulation_[0]->isChecked() || use_for_main_simulation_[1]->isChecked()) ||
-         use_for_main_simulation_[2]->isChecked()) == 0) {
+    if (((!use_for_main_simulation_[0]->isChecked() && !use_for_main_simulation_[1]->isChecked()) &&
+         !use_for_main_simulation_[2]->isChecked())) {
         emit all_boxes_are_unchecked(); // prevent undefined behaviour when no box is checked in incoming travelers
     }
 }
@@ -214,12 +213,13 @@ void PrevalenceTab::update_layout() {
                                      Utils::safeguard_probability(max[0], 3) + ")");
     result_presympt_range_->setText("(" + Utils::safeguard_probability(min[1], 3) + ", " +
                                     Utils::safeguard_probability(max[1], 3) + ")");
-    result_sympt_range_->setText("(" + Utils::safeguard_probability(min[2], 3) + ", " + Utils::safeguard_probability(max[2], 3) +
-                                 ")");
+    result_sympt_range_->setText("(" + Utils::safeguard_probability(min[2], 3) + ", " +
+                                 Utils::safeguard_probability(max[2], 3) + ")");
     result_postinf_range_->setText("(" + Utils::safeguard_probability(min[3], 3) + ", " +
                                    Utils::safeguard_probability(max[3], 3) + ")");
-    result_total_prevalence_range_->setText("(" + Utils::safeguard_probability(min[0] + min[1] + min[2] + min[3], 3) + ", " +
-                                            Utils::safeguard_probability(max[0] + max[1] + max[2] + max[3], 3) + ")");
+    result_total_prevalence_range_->setText("(" + Utils::safeguard_probability(min[0] + min[1] + min[2] + min[3], 3) +
+                                            ", " + Utils::safeguard_probability(max[0] + max[1] + max[2] + max[3], 3) +
+                                            ")");
     result_inf_prevalence_range_->setText("(" + Utils::safeguard_probability(min[0] + min[1] + min[2], 3) + ", " +
                                           Utils::safeguard_probability(max[0] + max[1] + max[2], 3) + ")");
 
