@@ -1,3 +1,29 @@
+/* prevalence_tab.cpp
+ * Written by Wiep van der Toorn.
+ *
+ * This file is part of COVIDStrategycalculator.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ * This file implements the PrevalenceTab class for the prevalence-related user input which derives from QWidget.
+ * The PrevalenceTab provides the third tab of the user input field and acts as the interface to the prevalence
+ * estimator feature of the COVIDStrategycalculator.
+ * This widget allows users to run a prevalence estimation based on the recent incidence reports of a region/country and
+ * to use the results (a mix of ‘infection ages’) as the initital states of the main simulation.
+ */
+
 #include "include/gui/user_input/prevalence_tab.h"
 #include "include/core/model.h"
 #include "include/gui/utils.h"

@@ -1,3 +1,27 @@
+/* prevalence_estimator.cpp
+ * Written by Wiep van der Toorn.
+ *
+ * This file is part of COVIDStrategycalculator.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ * This file implements the PrevalenceEstimator class, which derives from, and extends the Simulation class.
+ * The objective of the PrevalenceEstimator class is to execute a single simulation to generate a population with
+ * mixed ‘infection age’ for the analysis of NPI strategies.
+ */
+
 #include "include/core/prevalence_estimator.h"
 
 // pre-simulation for prevalence estimator
@@ -5,14 +29,15 @@ PrevalenceEstimator::PrevalenceEstimator(ParametersTab *parameters_tab, Prevalen
     : Simulation(parameters_tab) {
     std::vector<float> incidence = prevalence_tab->incidence();
 
-    t_end = 0;
-    risk_posing_fraction_symptomatic_phase = 1.;
-    expected_adherence = 1.;
-    t_test = {};
+    this->t_end = 0;                                   // placeholder, not used
+    this->risk_posing_fraction_symptomatic_phase = 1.; // no symptom screening
+    this->expected_adherence = 1.;                     // placeholder, not used
+    this->t_test = {};                                 // placeholder, not used
 
     estimate_prevalence(incidence);
 }
 
+// weekly incidence: [week 0, week -1, week -2, week -3, ...]
 void PrevalenceEstimator::estimate_prevalence(std::vector<float> weekly_incidence) {
 
     Eigen::MatrixXf X_mean;
@@ -38,7 +63,7 @@ void PrevalenceEstimator::estimate_prevalence(std::vector<float> weekly_incidenc
 
     for (int week = 0; week < 5; ++week) {
         float day_incidence = weekly_incidence[week] / 7;
-        t_end = (week + 1) * 7 - 1;
+        t_end = (week + 1) * 7 - 1; // -1 because days are 0-indexed
 
         // set intial states according to incidence report
         int counter = 0;
@@ -86,6 +111,6 @@ void PrevalenceEstimator::estimate_prevalence(std::vector<float> weekly_incidenc
     probabilities_mtrx.col(1) = probability_per_phase_today_best;
     probabilities_mtrx.col(2) = probability_per_phase_today_worst;
 
-    compartment_states_ = states_mtrx;
-    phase_probabilities_ = probabilities_mtrx;
+    this->compartment_states_ = states_mtrx;
+    this->phase_probabilities_ = probabilities_mtrx;
 }

@@ -1,3 +1,27 @@
+/* simulation.cpp
+ * Written by Wiep van der Toorn.
+ *
+ * This file is part of COVIDStrategycalculator.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ * This file implements the Simulation class.
+ * The objective of the Simulation class is to execute and calculate the efficaty of an arbitrary NPI strategy.
+ * The Simulation handles the comparison of the strategy, to the baseline case.
+ */
+
 #include "include/core/simulation.h"
 
 Simulation::Simulation(ParametersTab *parameters_tab) { collect_parameters(parameters_tab); }
@@ -23,8 +47,6 @@ Simulation::Simulation(ParametersTab *parameters_tab, StrategyTab *strategy_tab,
 }
 
 void Simulation::collect_strategy(StrategyTab *strategy_tab) {
-    // strategy is 0-indexed, i.e. for a 10-day quarantine we want the states for day 0 (today) up to
-    // and including day 10. Hence, t_end = delay + duration of strategy + 1
     t_offset = strategy_tab->time_delay();
     t_end = strategy_tab->time_delay() + strategy_tab->end_of_strategy();
     t_test = strategy_tab->test_moments();
@@ -106,6 +128,7 @@ void Simulation::apply_symptomatic_screening_to_initial_states() {
     screening(Eigen::seq(first_symptomatic_compartment, last_symptomatic_compartment)).array() =
         risk_posing_fraction_symptomatic_phase;
 
+    // (1 - risk_posing_fraction_symptomatic_phase) * 100 % of symptomatic individuals goes into isolation
     initial_states_NPI.array() = screening.array() * initial_states_no_intervention.array();
 }
 
@@ -124,11 +147,12 @@ void Simulation::create_different_scenario_models() {
     model_worst_case_NPI = new Model(tau_worst_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
                                      t_test, test_sensitivity, test_specificity);
 
-    // states per evaluation time
+    // states per evaluation point
     strategy_states_mean = model_mean_case_NPI->run();
     strategy_states_best = model_best_case_NPI->run();
     strategy_states_worst = model_worst_case_NPI->run();
 
+    // states per time point
     states_mean_no_intervention = model_mean_case_no_intervention->run();
     states_best_no_intervention = model_best_case_no_intervention->run();
     states_worst_no_intervention = model_worst_case_no_intervention->run();
@@ -139,8 +163,8 @@ Eigen::MatrixXf Simulation::temporal_assay_sensitivity() {
     Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(states_best_no_intervention);
     Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(states_worst_no_intervention);
 
-    float initial_population = daily_probability_per_phase_mean(0, Eigen::seq(0, 3)).sum(); // needed for scaling
-                                                                                            // for incoming travelers
+    // needed for scaling if initial population (probability) != 1.
+    float initial_population = daily_probability_per_phase_mean(0, Eigen::seq(0, 3)).sum();
 
     Eigen::VectorXf p_detectable_mean, p_detectable_best, p_detectable_worst;
     p_detectable_mean =
@@ -153,7 +177,7 @@ Eigen::MatrixXf Simulation::temporal_assay_sensitivity() {
         (1 - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 0) +
         test_sensitivity * daily_probability_per_phase_worst(Eigen::all, Eigen::seq(1, 3)).rowwise().sum();
 
-    Eigen::MatrixXf p_detectable(t_end + 1, 3);
+    Eigen::MatrixXf p_detectable(t_end + 1, 3); // +1 decause of 0-indexed time
     p_detectable.col(0) = p_detectable_mean.array() / initial_population;
     p_detectable.col(1) = p_detectable_best.array() / initial_population;
     p_detectable.col(2) = p_detectable_worst.array() / initial_population;
@@ -173,25 +197,25 @@ Eigen::MatrixXf Simulation::test_efficacy() {
     Eigen::VectorXf ones(daily_probability_per_phase_mean.rows());
     ones.fill(1);
 
-    Eigen::VectorXf p_PCR_positive_mean =
+    Eigen::VectorXf p_positive_test_mean =
         (1. - test_specificity) * daily_probability_per_phase_mean(Eigen::all, 0) +
         test_sensitivity * daily_probability_per_phase_mean(Eigen::all, Eigen::seq(1, 3)).rowwise().sum() +
         (1. - test_specificity) *
             (ones - daily_probability_per_phase_mean(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
-    Eigen::VectorXf p_PCR_positive_best =
+    Eigen::VectorXf p_positive_test_best =
         (1. - test_specificity) * daily_probability_per_phase_best(Eigen::all, 0) +
         test_sensitivity * daily_probability_per_phase_best(Eigen::all, Eigen::seq(1, 3)).rowwise().sum() +
         (1. - test_specificity) *
             (ones - daily_probability_per_phase_best(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
-    Eigen::VectorXf p_PCR_positive_worst =
+    Eigen::VectorXf p_positive_test_worst =
         (1. - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 0) +
         test_sensitivity * daily_probability_per_phase_worst(Eigen::all, Eigen::seq(1, 3)).rowwise().sum();
     +(1. - test_specificity) * (ones - daily_probability_per_phase_worst(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
 
-    Eigen::MatrixXf efficacy(t_end + 1, 3);
-    efficacy.col(0) = (infectious_mean * test_sensitivity).array() / p_PCR_positive_mean.array();
-    efficacy.col(1) = (infectious_best * test_sensitivity).array() / p_PCR_positive_best.array();
-    efficacy.col(2) = (infectious_worst * test_sensitivity).array() / p_PCR_positive_worst.array();
+    Eigen::MatrixXf efficacy(t_end + 1, 3); // +1 decause of 0-indexed time
+    efficacy.col(0) = (infectious_mean * test_sensitivity).array() / p_positive_test_mean.array();
+    efficacy.col(1) = (infectious_best * test_sensitivity).array() / p_positive_test_best.array();
+    efficacy.col(2) = (infectious_worst * test_sensitivity).array() / p_positive_test_worst.array();
 
     return efficacy;
 }
@@ -206,7 +230,7 @@ void Simulation::risk_no_intervention() {
     Eigen::VectorXf risk_no_intervention_best;
     Eigen::VectorXf risk_no_intervention_worst;
 
-    int n_eval = t_end + t_test.size() + 1;
+    int n_eval = t_end + t_test.size() + 1; // +1 decause of 0-indexed time
     Eigen::MatrixXf X0_proxy = initial_states_no_intervention;
     X0_proxy.resize(1, Model::n_compartments);
 
@@ -298,7 +322,7 @@ Eigen::MatrixXf Simulation::group_by_phase(Eigen::MatrixXf states) {
 }
 
 Eigen::VectorXf Simulation::evaluation_points_with_tests() {
-    int n_eval_points = t_end + t_test.size() + 1;
+    int n_eval_points = t_end + t_test.size() + 1; // +1 decause of 0-indexed time
     Eigen::VectorXf evaluation_points(n_eval_points);
 
     int time_counter = -t_offset;
@@ -332,6 +356,7 @@ Eigen::VectorXf Simulation::evaluation_points_without_tests() {
     return evaluation_points;
 }
 
+// probability to be-, or yet to become infectious
 Eigen::VectorXf Simulation::get_p_infectious_tend() {
     Eigen::VectorXf v(3);
 

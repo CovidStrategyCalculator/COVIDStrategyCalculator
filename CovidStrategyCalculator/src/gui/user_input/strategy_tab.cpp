@@ -1,3 +1,27 @@
+/* strategy_tab.cpp
+ * Written by Wiep van der Toorn.
+ *
+ * This file is part of COVIDStrategycalculator.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ * This file implements the StrategyTab class for the strategy-related user input and derives from QWidget.
+ * The StrategyTab provides the first tab of the user input field and allows the user to design and evaluate a custom
+ * NPI strategy.
+ */
+
 #include "include/gui/user_input/strategy_tab.h"
 #include "include/gui/utils.h"
 

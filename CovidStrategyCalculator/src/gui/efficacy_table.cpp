@@ -1,3 +1,26 @@
+/* efficacy_table.cpp
+ * Written by Wiep van der Toorn.
+ *
+ * This file is part of COVIDStrategycalculator.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ * This file implements the EfficacyTable class which derives from QTableWidget.
+ * The EfficacyTable class displays the diagnostic test efficacy P(infectious|positive test).
+ */
+
 #include "include/gui/efficacy_table.h"
 #include "include/gui/utils.h"
 
@@ -18,12 +41,12 @@ void EfficacyTable::update(Simulation *simulation) {
     this->setColumnCount(time.size());
     this->setRowCount(1);
 
-    QStringList h_labels;
+    QStringList header_labels;
     for (int i = 0; i < time.size(); ++i) {
-        h_labels << QString::number(time(i));
+        header_labels << QString::number(time(i));
     }
 
-    this->setHorizontalHeaderLabels(h_labels);
+    this->setHorizontalHeaderLabels(header_labels);
     this->setVerticalHeaderLabels((QStringList() << "P(infectious | positive test)"));
 
     for (int i = 0; i < time.size(); ++i) {

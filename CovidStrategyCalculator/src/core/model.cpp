@@ -1,3 +1,27 @@
+/* model.cpp
+ * Written by Wiep van der Toorn.
+ *
+ * This file is part of COVIDStrategycalculator.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ *
+ * This file implements the Model class, which derives from-, and extends the BaseModel class.
+ * The Model class extends the BaseModel for diagnostic testing and calculation of the residual transmission risk that
+ * remains after the NPI strategy.
+ */
+
 #include "include/core/model.h"
 
 Model::Model(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
@@ -12,7 +36,7 @@ Model::Model(std::vector<float> residence_times, float risk_posing_fraction_symp
 }
 
 Model::Model(std::vector<float> residence_times, Eigen::VectorXf initial_states, int time)
-    : Model(residence_times, 1, initial_states, time, {}, .8, .9){};
+    : Model(residence_times, 1, initial_states, time, {}, .8, .999){};
 
 void Model::set_false_ommision_rate() {
     Eigen::VectorXf FOR(Model::n_compartments);
@@ -32,7 +56,7 @@ void Model::set_false_ommision_rate() {
 }
 
 Eigen::MatrixXf Model::run_no_test(int time) {
-    Eigen::MatrixXf states(Model::n_compartments, time + 1);
+    Eigen::MatrixXf states(Model::n_compartments, time + 1); // +1 because of start at day=0
 
     for (int i = 0; i < time + 1; ++i) {
         states.col(i) = this->run_base(i);
@@ -47,8 +71,9 @@ Eigen::MatrixXf Model::run_no_test() {
     return X_transposed;
 }
 
+// The model is executed in 1-day steps to obtain all the points required for plotting
 Eigen::MatrixXf Model::run() {
-    int n_eval_states = t_end + t_test.size() + 1;
+    int n_eval_states = t_end + t_test.size() + 1; // +1 because strategy is 0-indexed
     Eigen::MatrixXf states(Model::n_compartments, n_eval_states);
 
     int day_counter = 0;
@@ -68,12 +93,13 @@ Eigen::MatrixXf Model::run() {
     return states;
 }
 
+// calculates the residual risk
 Eigen::VectorXf Model::integrate(Eigen::MatrixXf X) {
     Eigen::VectorXf risk_at_t_inf(X.rows());
     X.transposeInPlace();
 
     for (int i = 0; i < X.cols(); ++i) {
-        risk_at_t_inf[i] = this->run_base(100 - i, X.col(i))(Eigen::last);
+        risk_at_t_inf[i] = this->run_base(100 - i, X.col(i))(Eigen::last); // t_inf=100
     }
     return risk_at_t_inf;
 }
