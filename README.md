@@ -10,7 +10,7 @@ The software allows full flexibility with regards to parameter choices, that, fo
 For further details on the scientific methods and results we refer to the article, which can be found [here](https://doi.org/10.1101/2020.11.18.20233825).
 
 ## Use the web version
-The online version of the COVIDStrategyCalculator can be found [here](https://CovidStrategyCalculator.github.io).
+The online version of the COVIDStrategyCalculator can be found [here](https://CovidStrategyCalculator.github.io) [Impressum and Data protection statement](Impressum.html).
 The web version is best used on a full-sized screen (desktop/laptop).
 
 ## Download executables
