@@ -11,7 +11,8 @@ For further details on the scientific methods and results we refer to the articl
 
 ## Use the web version
 The online version of the COVIDStrategyCalculator can be found [here](https://CovidStrategyCalculator.github.io).
-The web version is best used on a full-sized screen (desktop/laptop).
+The web version is best used on a full-sized screen (desktop/laptop). To ensure that you're are running the latest
+version, we recommend that you clear your browser's cache for this website regularly.
 
 ## Download executables
 You can download the CSC as a pre-compiled executable. To download, click on the hyperlinks below.
