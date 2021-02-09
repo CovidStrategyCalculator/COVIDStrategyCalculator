@@ -10,18 +10,14 @@ The software allows full flexibility with regards to parameter choices, that, fo
 For further details on the scientific methods and results we refer to the article, which can be found [here](https://doi.org/10.1101/2020.11.18.20233825).
 
 ## Use the web version
-The online version of the COVIDStrategyCalculator can be found [here](https://CovidStrategyCalculator.github.io).
+The online version of the COVIDStrategyCalculator can be found [here](https://CovidStrategyCalculator.github.io) (Impressum: [here](https://CovidStrategyCalculator.github.io/impressum.html)).
 The web version is best used on a full-sized screen (desktop/laptop). To ensure that you're are running the latest
 version, we recommend that you clear your browser's cache for this website regularly.
 
-## Download executables
-You can download the CSC as a pre-compiled executable. To download, click on the hyperlinks below.
-* [Linux](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/raw/main/executables/Linux/CovidStrategyCalculator)
-* [Windows](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/raw/main/executables/Windows/CovidStrategyCalculator.exe)
-* [MacOS](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/archive/main.zip), please see [the instructions for installation on MacOS](https://github.com/CovidStrategyCalculator/CovidStrategyCalculator/blob/main/resources/InstructionsMacOS.pdf)
+If you have any questions, please open an issue or contact us via [email](kleistm@rki.de).
 
 ## Software utilization
-![overview-image](resources/overview.png)
+![overview-image](overview.png)
 *Figure 1. Screenshot of CovidStrategyCalculator. A. The main window consists of four components: user input (1), a result log (2), time course trajectories (3) and test efficacy reports (4). Reported results include the pre-procedure risk (prevalence), post-procedure risk (residual risk) and fold risk reduction. B. Zoom-in on the strategy-related user input. C. Model parameter input tab. D. Prevalence estimator input tab.*
 
 The emphasis in software design has been put on combining ease-of-use with maximal flexibility.  Figure 1A shows a screenshot of the strategy evaluation window of the tool, where the user can define what he/she wants to analyse, e.g. an arbitrary strategy (1). Simulating a chosen strategy, will depict the results table (2) and graphics regarding the assay sensitivity and relative risk profile (3), as well as numeric values regarding the time-dependent assay sensitivity (4) to ease the selection of times to perform diagnostic tests.
@@ -35,6 +31,11 @@ When choosing the **incoming travelers mode** (field (8) in Figure 1B), the user
 In the **isolation mode**, the user can test strategies for the duration of isolation of infected individuals. The user’s options are similar to the modi described above, with the exception that a symptomatic screening is not possible (individuals in isolation are confirmed infected or have symptoms) and that the isolated individual starts in the infectious (symptomatic) phase.
 
 In addition to these features, a user can  jump straight to the **prevalence estimator**, field (7) in Figure 1B or freely change the models’ default parameters (clicking on field (6) in Figure 1B will show the window depicted in Figure 1C) to customize the model. Figure 1C shows the model parameter input tab. Uncertainty ranges are calculated based on the extreme parameter values provided by the user (15). The percentage of asymptomatic cases also be defined by the user (16).
+
+## Pre-compiled executables
+You can download the CSC as a pre-compiled executable.
+These binaries are updated less often than the web version. We recommend to use the web version.
+You can find the latest builds [here](https://github.com/CovidStrategyCalculator/COVIDStrategyCalculator/releases).
 
 ## Building from source
 The CSC application can be compiled from source using the Qt5 framework. CSC requires the Eigen 3.3.7 library which is included as a submodule. When cloning the repository use the `--recursive` option, i.e:
