@@ -20,9 +20,9 @@ PlotArea::PlotArea(Simulation *simulation) : QtCharts::QChart(nullptr) {
     QtCharts::QLineSeries *detect_high = new QtCharts::QLineSeries;
 
     for (int j = 0; j < assay_sensitivity.rows(); ++j) {
-        detect_mean->append(time_sensitivity[j], assay_sensitivity(j, 0));
-        detect_low->append(time_sensitivity[j], assay_sensitivity(j, 1));
-        detect_high->append(time_sensitivity[j], assay_sensitivity(j, 2));
+        detect_mean->append(time_sensitivity[j], assay_sensitivity(j, 0) * 100.);
+        detect_low->append(time_sensitivity[j], assay_sensitivity(j, 1) * 100.);
+        detect_high->append(time_sensitivity[j], assay_sensitivity(j, 2) * 100.);
     }
     QtCharts::QAreaSeries *detect_area = new QtCharts::QAreaSeries(detect_low, detect_high);
     detect_area->setName("Assay sensitivity");
@@ -43,9 +43,9 @@ PlotArea::PlotArea(Simulation *simulation) : QtCharts::QChart(nullptr) {
     risk_mean->setName("Relative risk");
 
     for (int j = 0; j < risk.rows(); ++j) {
-        risk_mean->append(time_risk[j], risk(j, 0));
-        risk_low->append(time_risk[j], risk(j, 1));
-        risk_high->append(time_risk[j], risk(j, 2));
+        risk_mean->append(time_risk[j], risk(j, 0) * 100.);
+        risk_low->append(time_risk[j], risk(j, 1) * 100.);
+        risk_high->append(time_risk[j], risk(j, 2) * 100.);
     }
     QtCharts::QAreaSeries *risk_area = new QtCharts::QAreaSeries(risk_low, risk_high);
 
@@ -73,16 +73,16 @@ PlotArea::PlotArea(Simulation *simulation) : QtCharts::QChart(nullptr) {
         this->axes(Qt::Horizontal).first()->setTitleText("Days since entry");
         break;
     }
-    this->axes(Qt::Vertical).first()->setTitleText("Relative risk");
+    this->axes(Qt::Vertical).first()->setTitleText("Relative risk [%]");
 
     QtCharts::QValueAxis *axisX = qobject_cast<QtCharts::QValueAxis *>(this->axes(Qt::Horizontal).first());
     axisX->setTickCount(time_sensitivity.size());
 
     QtCharts::QValueAxis *axisY = qobject_cast<QtCharts::QValueAxis *>(this->axes(Qt::Vertical).first());
-    axisY->setRange(0, 1);
+    axisY->setRange(0, 100);
 
     QtCharts::QValueAxis *axisY2 = new QtCharts::QValueAxis;
-    axisY2->setTitleText("Assay sensitivity");
+    axisY2->setTitleText("Assay sensitivity [%]");
     this->addAxis(axisY2, Qt::AlignRight);
     detect_area->attachAxis(axisY2);
 

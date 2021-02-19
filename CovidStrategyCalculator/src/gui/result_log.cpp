@@ -17,8 +17,8 @@ ResultLog::ResultLog(QWidget *parent) : QTableWidget(0, 11, parent) {
                                                    << "test type"
                                                    << "P(infectious)\nstart"
                                                    << "P(infectious)\nend"
-                                                   << "risk reduction\n[%]"
-                                                   << "fold risk\nreduction"));
+                                                   << "relative risk\n[%]"
+                                                   << "risk reduction\n[%]"));
 
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->horizontalHeader()->setStyleSheet("QHeaderView { font-size: 8pt; }");
@@ -74,14 +74,14 @@ void ResultLog::write_row_result_log(Simulation *simulation) {
                                        Utils::safeguard_probability(p_infectious_tend(2), 2) + ")"));
 
     this->setItem(0, 9,
+                  new QTableWidgetItem(Utils::safeguard_inf(100. / fold_risk_reduction(0, 0), 2) + " (" +
+                                       Utils::safeguard_inf(100. / fold_risk_reduction(0, 1), 2) + ", " +
+                                       Utils::safeguard_inf(100. / fold_risk_reduction(0, 2), 2) + ")"));
+
+    this->setItem(0, 10,
                   new QTableWidgetItem(Utils::safeguard_probability(risk_reduction(0, 0) * 100., 2) + " (" +
                                        Utils::safeguard_probability(risk_reduction(0, 1) * 100., 2) + ", " +
                                        Utils::safeguard_probability(risk_reduction(0, 2) * 100., 2) + ")"));
-
-    this->setItem(0, 10,
-                  new QTableWidgetItem(Utils::safeguard_inf(fold_risk_reduction(0, 0), 2) + " (" +
-                                       Utils::safeguard_inf(fold_risk_reduction(0, 1), 2) + ", " +
-                                       Utils::safeguard_inf(fold_risk_reduction(0, 2), 2) + ")"));
 
     for (int i = 0; i < 11; ++i) {
         this->item(0, i)->setFlags(this->item(0, i)->flags() & ~Qt::ItemIsEditable);
