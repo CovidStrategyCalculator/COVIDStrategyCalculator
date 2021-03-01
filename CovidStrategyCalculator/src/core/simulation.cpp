@@ -108,7 +108,7 @@ void Simulation::set_initial_states() {
         break;
     case 1: {
         int first_symptomatic_compartment = Model::sub_compartments[0] + Model::sub_compartments[1];
-        X0(first_symptomatic_compartment) = 1.0;
+        X0(first_symptomatic_compartment) = p_infectious_t0;
         break;
     }
     default:
