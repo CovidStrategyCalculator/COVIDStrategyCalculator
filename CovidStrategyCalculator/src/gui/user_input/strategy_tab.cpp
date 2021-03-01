@@ -70,7 +70,7 @@ void StrategyTab::set_layout() {
     QGridLayout *upper_grid_layout = new QGridLayout;
     upper_grid_layout->addWidget(new QLabel(tr("Simulation mode: ")), 0, 0);
     upper_grid_layout->addWidget(mode_, 0, 1, Qt::AlignLeft);
-    upper_grid_layout->addWidget(new QLabel(tr("Initial probability to be or become infectious: ")), 1, 0);
+    upper_grid_layout->addWidget(new QLabel(tr("Initial probability of infection: ")), 1, 0);
     upper_grid_layout->addWidget(p_infectious_t0_, 1, 1, Qt::AlignLeft);
     upper_grid_layout->addWidget(new QLabel(tr("Time passed since exposure/symptom onset [days]: ")), 2, 0);
     upper_grid_layout->addWidget(time_delay_, 2, 1, Qt::AlignLeft);
