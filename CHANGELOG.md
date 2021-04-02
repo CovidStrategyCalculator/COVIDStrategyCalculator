@@ -1,6 +1,7 @@
 ## 1.0.3 (April 2, 2021)
 
   * [FEAT] Add tooltips to fields that are not self-explanatory.
+  * [FIX] In result log: mid_min_max ordering on relative risk and p_infectious_tend.
 
 ## 1.0.2 (March 1, 2021)
 

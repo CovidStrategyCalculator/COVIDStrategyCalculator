@@ -89,7 +89,12 @@ void ResultLog::write_row_result_log(Simulation *simulation) {
     Eigen::MatrixXf fold_risk_reduction =
         Utils::mid_min_max(simulation->fold_risk_reduction())(Eigen::last, Eigen ::all);
 
+    Eigen::VectorXf relative_risk(3);
+    relative_risk = Utils::mid_min_max((100. / fold_risk_reduction(0, 0)), (100. / fold_risk_reduction(0, 1)),
+                                       (100. / fold_risk_reduction(0, 2)));
+
     Eigen::VectorXf p_infectious_tend = simulation->get_p_infectious_tend();
+    p_infectious_tend = Utils::mid_min_max(p_infectious_tend(0), p_infectious_tend(1), p_infectious_tend(2));
 
     this->setItem(0, 8,
                   new QTableWidgetItem(Utils::safeguard_probability(p_infectious_tend(0), 2) + " (" +
@@ -97,9 +102,9 @@ void ResultLog::write_row_result_log(Simulation *simulation) {
                                        Utils::safeguard_probability(p_infectious_tend(2), 2) + ")"));
 
     this->setItem(0, 9,
-                  new QTableWidgetItem(Utils::safeguard_inf(100. / fold_risk_reduction(0, 0), 2) + " (" +
-                                       Utils::safeguard_inf(100. / fold_risk_reduction(0, 1), 2) + ", " +
-                                       Utils::safeguard_inf(100. / fold_risk_reduction(0, 2), 2) + ")"));
+                  new QTableWidgetItem(Utils::safeguard_inf(relative_risk(0), 2) + " (" +
+                                       Utils::safeguard_inf(relative_risk(1), 2) + ", " +
+                                       Utils::safeguard_inf(relative_risk(2), 2) + ")"));
 
     this->setItem(0, 10,
                   new QTableWidgetItem(Utils::safeguard_probability(risk_reduction(0, 0) * 100., 2) + " (" +
