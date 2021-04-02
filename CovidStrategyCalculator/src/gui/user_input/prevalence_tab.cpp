@@ -45,6 +45,27 @@ void PrevalenceTab::initialize_member_variables() {
     reports1_ = Utils::create_SpinBox(50, 0, 100000);
     reports0_ = Utils::create_SpinBox(50, 0, 100000);
 
+    char tt_reports4_[] = "<html><head/><body><p> "
+                          "Four weeks prior to current week."
+                          "</p></body></html>";
+    reports4_->setToolTip(tt_reports4_);
+    char tt_reports3_[] = "<html><head/><body><p> "
+                          "Three weeks prior to current week."
+                          "</p></body></html>";
+    reports3_->setToolTip(tt_reports3_);
+    char tt_reports2_[] = "<html><head/><body><p> "
+                          "Two weeks prior to current week."
+                          "</p></body></html>";
+    reports2_->setToolTip(tt_reports2_);
+    char tt_reports1_[] = "<html><head/><body><p> "
+                          "One week prior to current week."
+                          "</p></body></html>";
+    reports1_->setToolTip(tt_reports1_);
+    char tt_reports0_[] = "<html><head/><body><p> "
+                          "Current week: past 7 days."
+                          "</p></body></html>";
+    reports0_->setToolTip(tt_reports0_);
+
     percent_of_population4_ = new QLabel(QString::number((float)reports4_->value() / 100000. * 100., 'f', 3) + "%");
     percent_of_population3_ = new QLabel(QString::number((float)reports3_->value() / 100000. * 100., 'f', 3) + "%");
     percent_of_population2_ = new QLabel(QString::number((float)reports2_->value() / 100000. * 100., 'f', 3) + "%");
@@ -72,10 +93,28 @@ void PrevalenceTab::initialize_member_variables() {
     result_total_prevalence_range_ = new QLabel(tr(" "));
     result_inf_prevalence_range_ = new QLabel(tr(" "));
 
+    QString tt_cb_typical = tr("<html><head/><body><p> "
+                               "Prevalence estimation based on typical case dynamics. "
+                               "Select to use these results as the inital conditions "
+                               "for a simulation in 'incoming travelers' mode."
+                               "</p></body></html>");
+    QString tt_cb_best = tr("<html><head/><body><p> "
+                            "Prevalence estimation based on extreme case dynamics, best case. "
+                            "Select to use these results as the inital conditions "
+                            "for a simulation in 'incoming travelers' mode."
+                            "</p></body></html>");
+    QString tt_cb_worst = tr("<html><head/><body><p> "
+                             "Prevalence estimation based on extreme case dynamics, worst case. "
+                             "Select to use these results as the inital conditions "
+                             "for a simulation in 'incoming travelers' mode."
+                             "</p></body></html>");
+    std::vector<QString> tooltips_checkboxes{tt_cb_typical, tt_cb_best, tt_cb_worst};
+
     for (int i = 0; i < 3; ++i) {
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setChecked(false);
         checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        checkbox->setToolTip(tooltips_checkboxes[i]);
         use_for_main_simulation_.push_back(checkbox);
     }
 
@@ -138,17 +177,47 @@ void PrevalenceTab::set_layout() {
     incidence_layout->addWidget(new QLabel(tr("Unit")), 0, 2, Qt::AlignCenter);
     incidence_layout->addWidget(new QLabel(tr("Percent of population")), 0, 3, Qt::AlignCenter);
 
-    incidence_layout->addWidget(new QLabel(tr("Week -4")), 1, 0);
-    incidence_layout->addWidget(new QLabel(tr("Week -3")), 2, 0);
-    incidence_layout->addWidget(new QLabel(tr("Week -2")), 3, 0);
-    incidence_layout->addWidget(new QLabel(tr("Week -1")), 4, 0);
-    incidence_layout->addWidget(new QLabel(tr("This week")), 5, 0);
+    QLabel *label_week4 = new QLabel(tr("Week -4"));
+    char tt_label_week4[] = "<html><head/><body><p> "
+                            "Four weeks prior to current week."
+                            "</p></body></html>";
+    label_week4->setToolTip(tt_label_week4);
 
-    incidence_layout->addWidget(reports4_, 1, 1, Qt::AlignCenter);
-    incidence_layout->addWidget(reports3_, 2, 1, Qt::AlignCenter);
+    QLabel *label_week3 = new QLabel(tr("Week -3"));
+    char tt_label_week3[] = "<html><head/><body><p> "
+                            "Three weeks prior to current week."
+                            "</p></body></html>";
+    label_week3->setToolTip(tt_label_week3);
+
+    QLabel *label_week2 = new QLabel(tr("Week -2"));
+    char tt_label_week2[] = "<html><head/><body><p> "
+                            "Two weeks prior to current week."
+                            "</p></body></html>";
+    label_week2->setToolTip(tt_label_week2);
+
+    QLabel *label_week1 = new QLabel(tr("Week -1"));
+    char tt_label_week1[] = "<html><head/><body><p> "
+                            "One week prior to current week."
+                            "</p></body></html>";
+    label_week1->setToolTip(tt_label_week1);
+
+    QLabel *label_week0 = new QLabel(tr("This week"));
+    char tt_label_week0[] = "<html><head/><body><p> "
+                            "Current week: past 7 days."
+                            "</p></body></html>";
+    label_week0->setToolTip(tt_label_week0);
+
+    incidence_layout->addWidget(label_week4, 5, 0);
+    incidence_layout->addWidget(label_week3, 4, 0);
+    incidence_layout->addWidget(label_week2, 3, 0);
+    incidence_layout->addWidget(label_week1, 2, 0);
+    incidence_layout->addWidget(label_week0, 1, 0);
+
+    incidence_layout->addWidget(reports4_, 5, 1, Qt::AlignCenter);
+    incidence_layout->addWidget(reports3_, 4, 1, Qt::AlignCenter);
     incidence_layout->addWidget(reports2_, 3, 1, Qt::AlignCenter);
-    incidence_layout->addWidget(reports1_, 4, 1, Qt::AlignCenter);
-    incidence_layout->addWidget(reports0_, 5, 1, Qt::AlignCenter);
+    incidence_layout->addWidget(reports1_, 2, 1, Qt::AlignCenter);
+    incidence_layout->addWidget(reports0_, 1, 1, Qt::AlignCenter);
 
     incidence_layout->addWidget(new QLabel(tr("1/100,000 individuals per week")), 1, 2, Qt::AlignLeft);
     incidence_layout->addWidget(new QLabel(tr("1/100,000 individuals per week")), 2, 2, Qt::AlignLeft);
@@ -195,7 +264,13 @@ void PrevalenceTab::set_layout() {
     result_layout->addWidget(result_total_prevalence_range_, 2, 5, Qt::AlignCenter);
     result_layout->addWidget(result_inf_prevalence_range_, 2, 6, Qt::AlignCenter);
 
-    result_layout->addWidget(new QLabel(tr("Use")), 0, 7, 1, 2, Qt::AlignCenter);
+    QLabel *label_use = new QLabel(tr("Use"));
+    char tt_label_use[] = "<html><head/><body><p>"
+                          "Please select one of the checkboxes below if you want to use the "
+                          "results for a simulation in 'incoming travelers' mode."
+                          "</p></body></html>";
+    label_use->setToolTip(tt_label_use);
+    result_layout->addWidget(label_use, 0, 7, 1, 2, Qt::AlignCenter);
     result_layout->addWidget(use_for_main_simulation_[0], 1, 7, 1, 2, Qt::AlignCenter);
     result_layout->addWidget(use_for_main_simulation_[1], 2, 7, Qt::AlignCenter);
     result_layout->addWidget(use_for_main_simulation_[2], 2, 8, Qt::AlignCenter);

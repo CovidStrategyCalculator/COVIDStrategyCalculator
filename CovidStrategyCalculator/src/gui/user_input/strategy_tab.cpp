@@ -37,6 +37,13 @@ void StrategyTab::initialize_member_variables() {
     mode_ = new QComboBox;
     mode_->addItems(QStringList{"contact management", "isolation", "incoming travelers"});
     mode_->setCurrentIndex(0);
+    char tt_mode_[] = "<html><head/><body><p> Determines start situation of simulation: "
+                      "contant management starts at time of exposure, "
+                      "isolation starts at time of sympton onset, and "
+                      "incoming travelers uses a mixed-age distribution based on a "
+                      "selected prevalence estimation. "
+                      "</p></body></html>";
+    mode_->setToolTip(tt_mode_);
 
     test_type_ = new QComboBox;
     test_type_->addItems(QStringList{"PCR", "Antigen"});
@@ -46,9 +53,21 @@ void StrategyTab::initialize_member_variables() {
     time_delay_ = Utils::create_SpinBox(0, 0, 21);
     end_of_strategy_ = Utils::create_SpinBox(10, 0, 35);
     expected_adherence_ = Utils::create_SpinBox(100, 0, 100);
+    char tt_expected_adherence_[] = "<html><head/><body><p> "
+                                    "The expected level of adherence describes which percentage "
+                                    "of individuals follows the proposed NPI strategy."
+                                    "</p></body></html>";
+    expected_adherence_->setToolTip(tt_expected_adherence_);
 
     use_symptomatic_screening_ = new QCheckBox;
     use_symptomatic_screening_->setChecked(true);
+    char tt_use_symptomatic_screening_[] =
+        "<html><head/><body><p> "
+        "`Symptom screening’ implies that individuals who develop symptoms go into isolation "
+        "and do not pose a risk anymore, whereas individuals that not develop symptoms are "
+        "being released into society at the end of the quarantine and may continue to pose a risk. "
+        "</p></body></html>";
+    use_symptomatic_screening_->setToolTip(tt_use_symptomatic_screening_);
 
     test_days_box_ = new QGroupBox;
     test_days_box_->setTitle(tr("Days to test on:"));
@@ -68,17 +87,45 @@ void StrategyTab::initialize_member_variables() {
 
 void StrategyTab::set_layout() {
     QGridLayout *upper_grid_layout = new QGridLayout;
-    upper_grid_layout->addWidget(new QLabel(tr("Simulation mode: ")), 0, 0);
+
+    QLabel *label_mode = new QLabel(tr("Simulation mode: "));
+    char tt_label_mode[] = "<html><head/><body><p> Determines start situation of simulation: "
+                           "contant management starts at time of exposure, "
+                           "isolation starts at time of sympton onset, and "
+                           "incoming travelers uses a mixed-age distribution based on a "
+                           "preliminary prevalence estimation. "
+                           "</p></body></html>";
+    label_mode->setToolTip(tt_label_mode);
+    upper_grid_layout->addWidget(label_mode, 0, 0);
     upper_grid_layout->addWidget(mode_, 0, 1, Qt::AlignLeft);
+
     upper_grid_layout->addWidget(new QLabel(tr("Initial probability of infection: ")), 1, 0);
     upper_grid_layout->addWidget(p_infectious_t0_, 1, 1, Qt::AlignLeft);
+
     upper_grid_layout->addWidget(new QLabel(tr("Time passed since exposure/symptom onset [days]: ")), 2, 0);
     upper_grid_layout->addWidget(time_delay_, 2, 1, Qt::AlignLeft);
+
     upper_grid_layout->addWidget(new QLabel(tr("Duration of quarantine/isolation [days]: ")), 3, 0);
     upper_grid_layout->addWidget(end_of_strategy_, 3, 1, Qt::AlignLeft);
-    upper_grid_layout->addWidget(new QLabel(tr("Use symptomatic screening: ")), 4, 0);
+
+    QLabel *label_symptom_screening = new QLabel(tr("Use symptom screening: "));
+    char tt_label_symptom_screening[] =
+        "<html><head/><body><p> "
+        "`Symptom screening’ implies that individuals who develop symptoms go into isolation "
+        "and do not pose a risk anymore, whereas individuals that not develop symptoms are "
+        "being released into society at the end of the quarantine and may continue to pose a risk. "
+        "</p></body></html>";
+    label_symptom_screening->setToolTip(tt_label_symptom_screening);
+    upper_grid_layout->addWidget(label_symptom_screening, 4, 0);
     upper_grid_layout->addWidget(use_symptomatic_screening_, 4, 1, Qt::AlignLeft);
-    upper_grid_layout->addWidget(new QLabel(tr("Expected adherence [%]:")), 5, 0);
+
+    QLabel *label_expected_adherence = new QLabel(tr("Expected adherence [%]: "));
+    char tt_label_expected_adherence[] = "<html><head/><body><p> "
+                                         "The expected level of adherence describes which percentage "
+                                         "of individuals follows the proposed NPI strategy."
+                                         "</p></body></html>";
+    label_expected_adherence->setToolTip(tt_label_expected_adherence);
+    upper_grid_layout->addWidget(label_expected_adherence, 5, 0);
     upper_grid_layout->addWidget(expected_adherence_, 5, 1, Qt::AlignLeft);
 
     QLabel *logo = new QLabel;

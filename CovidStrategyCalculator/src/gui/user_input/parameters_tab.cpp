@@ -40,6 +40,13 @@ void ParametersTab::initialize_member_variables() {
     incubation_lower_ = Utils::create_DoubleSpinBox(default_values["duration_incubation_lower"], 0.01, 100, 2);
     percentage_predetection_ =
         Utils::create_DoubleSpinBox(default_values["percentage_of_incubation_predetection"], 0.01, 100, 2);
+    char tt_percentage_predetection_[] = "<html><head/><body><p> "
+                                         "Duration incubation period = duration predetectable period "
+                                         "+ duration presymptomatic, detectable period. "
+                                         "The value in this field indicates the ratio between the duration "
+                                         "of the predetectable period and the total incubation period."
+                                         "</p></body></html>";
+    percentage_predetection_->setToolTip(tt_percentage_predetection_);
     symptomatic_mean_ = Utils::create_DoubleSpinBox(default_values["duration_symptomatic_mean"], 0.01, 100, 2);
     symptomatic_upper_ = Utils::create_DoubleSpinBox(default_values["duration_symptomatic_upper"], 0.01, 100, 2);
     symptomatic_lower_ = Utils::create_DoubleSpinBox(default_values["duration_symptomatic_lower"], 0.01, 100, 2);
@@ -48,6 +55,11 @@ void ParametersTab::initialize_member_variables() {
     pcr_sens_ = Utils::create_DoubleSpinBox(default_values["PCR_sensitivity"], 0.01, 100, 2);
     pcr_spec_ = Utils::create_DoubleSpinBox(default_values["PCR_specificity"], 0.01, 100, 2);
     relative_rdt_sens_ = Utils::create_DoubleSpinBox(default_values["relative_RDT_sensitivity"], 0.01, 100, 2);
+    char tt_relative_rdt_sens_[] =
+        "<html><head/><body><p> "
+        "Effective sensitivity antigen-test = relative sensitivity to PCR * PCR sensitivity. "
+        "</p></body></html>";
+    relative_rdt_sens_->setToolTip(tt_relative_rdt_sens_);
 
     reset_button_ = new QPushButton(tr("Reset defaults"));
     reset_button_->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -58,24 +70,49 @@ void ParametersTab::set_layout() {
     QGridLayout *main_layout = new QGridLayout;
     main_layout->setAlignment(Qt::AlignCenter);
 
-    main_layout->addWidget(new QLabel(tr("Lower extreme value")), 0, 1, Qt::AlignCenter);
-    main_layout->addWidget(new QLabel(tr("Typical")), 0, 2, Qt::AlignCenter);
-    main_layout->addWidget(new QLabel(tr("Upper extreme value")), 0, 3, Qt::AlignCenter);
+    QLabel *label_lower = new QLabel(tr("Lower extreme value"));
+    char tt_label_lower[] = "<html><head/><body><p> "
+                            "Extreme case dynamics low, average value. "
+                            "</p></body></html>";
+    label_lower->setToolTip(tt_label_lower);
+    main_layout->addWidget(label_lower, 0, 1, Qt::AlignCenter);
 
-    main_layout->addWidget(new QLabel(tr("Mean duration of incubation period [day]:")), 1, 0);
+    QLabel *label_typical = new QLabel(tr("Typical"));
+    char tt_label_typical[] = "<html><head/><body><p> "
+                              "Typical case dynamics, average value. "
+                              "</p></body></html>";
+    label_typical->setToolTip(tt_label_typical);
+    main_layout->addWidget(label_typical, 0, 2, Qt::AlignCenter);
+
+    QLabel *label_upper = new QLabel(tr("Upper extreme value"));
+    char tt_label_upper[] = "<html><head/><body><p> "
+                            "Extreme case dynamics high, average value. "
+                            "</p></body></html>";
+    label_upper->setToolTip(tt_label_upper);
+    main_layout->addWidget(label_upper, 0, 3, Qt::AlignCenter);
+
+    main_layout->addWidget(new QLabel(tr("Mean duration of incubation period [days]:")), 1, 0);
     main_layout->addWidget(incubation_mean_, 1, 2, Qt::AlignCenter);
     main_layout->addWidget(incubation_upper_, 1, 3, Qt::AlignCenter);
     main_layout->addWidget(incubation_lower_, 1, 1, Qt::AlignCenter);
 
-    main_layout->addWidget(new QLabel(tr("Percentage thereof pre-detectable [%]:")), 2, 0);
+    QLabel *label_predetect = new QLabel(tr("Percentage thereof pre-detectable [%]:"));
+    char tt_label_predetect[] = "<html><head/><body><p> "
+                                "Duration incubation period = duration predetectable period "
+                                "+ duration presymptomatic, detectable period. "
+                                "The value in this field indicates the ratio between the duration "
+                                "of the predetectable period and the total incubation period."
+                                "</p></body></html>";
+    label_predetect->setToolTip(tt_label_predetect);
+    main_layout->addWidget(label_predetect, 2, 0);
     main_layout->addWidget(percentage_predetection_, 2, 2, Qt::AlignCenter);
 
-    main_layout->addWidget(new QLabel(tr("Mean duration of symptomatic period [day]:")), 3, 0);
+    main_layout->addWidget(new QLabel(tr("Mean duration of symptomatic period [days]:")), 3, 0);
     main_layout->addWidget(symptomatic_mean_, 3, 2, Qt::AlignCenter);
     main_layout->addWidget(symptomatic_upper_, 3, 3, Qt::AlignCenter);
     main_layout->addWidget(symptomatic_lower_, 3, 1, Qt::AlignCenter);
 
-    main_layout->addWidget(new QLabel(tr("Mean duration of post-symptomatic, detectable period [day]:")), 4, 0);
+    main_layout->addWidget(new QLabel(tr("Mean duration of post-symptomatic, detectable period [days]:")), 4, 0);
     main_layout->addWidget(postinfectious_, 4, 2, Qt::AlignCenter);
 
     main_layout->addWidget(new QLabel(tr("PCR-test sensitivity [%]")), 5, 0);
@@ -84,7 +121,13 @@ void ParametersTab::set_layout() {
     main_layout->addWidget(new QLabel(tr("PCR-test specificity [%]")), 6, 0);
     main_layout->addWidget(pcr_spec_, 6, 2, Qt::AlignCenter);
 
-    main_layout->addWidget(new QLabel(tr("Antigen-test sensitivity, relative to PCR-test [%]")), 7, 0);
+    QLabel *label_relative_rdt_sens = new QLabel(tr("Antigen-test sensitivity, relative to PCR-test [%]"));
+    char tt_label_relative_rdt_sens[] =
+        "<html><head/><body><p> "
+        "Effective sensitivity antigen-test = relative sensitivity to PCR * PCR sensitivity. "
+        "</p></body></html>";
+    label_relative_rdt_sens->setToolTip(tt_label_relative_rdt_sens);
+    main_layout->addWidget(label_relative_rdt_sens, 7, 0);
     main_layout->addWidget(relative_rdt_sens_, 7, 2, Qt::AlignCenter);
 
     main_layout->addWidget(new QLabel(tr("Percentage of asymptomatic infections [%]:")), 8, 0);

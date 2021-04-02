@@ -34,6 +34,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
+    this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+
     QSize size = QDesktopWidget().availableGeometry(this).size();
     int height = size.height();
     int width = size.width();
