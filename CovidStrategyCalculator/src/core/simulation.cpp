@@ -90,8 +90,8 @@ void Simulation::deduce_combined_parameters() {
     case 0: // PCR
         test_sensitivity = pcr_sens;
         break;
-    case 1: // RDT
-        test_sensitivity = pcr_sens * rdt_relative_sens;
+    case 1:                                                    // RDT
+        test_sensitivity = 1.3 * rdt_relative_sens * pcr_sens; // *1.3 to achieve 100% relative sensitivity at peak
         break;
     default:
         break;
@@ -141,11 +141,11 @@ void Simulation::create_different_scenario_models() {
         new Model(tau_worst_case, initial_states_no_intervention, t_end); // without tests or symptomatic screening
 
     model_mean_case_NPI = new Model(tau_mean_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
-                                    t_test, test_sensitivity, test_specificity);
+                                    t_test, test_type, test_sensitivity, test_specificity);
     model_best_case_NPI = new Model(tau_best_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
-                                    t_test, test_sensitivity, test_specificity);
+                                    t_test, test_type, test_sensitivity, test_specificity);
     model_worst_case_NPI = new Model(tau_worst_case, risk_posing_fraction_symptomatic_phase, initial_states_NPI, t_end,
-                                     t_test, test_sensitivity, test_specificity);
+                                     t_test, test_type, test_sensitivity, test_specificity);
 
     // states per evaluation point
     strategy_states_mean = model_mean_case_NPI->run();
@@ -159,6 +159,14 @@ void Simulation::create_different_scenario_models() {
 }
 
 Eigen::MatrixXf Simulation::temporal_assay_sensitivity() {
+    if (test_type == 0) {
+        return temporal_assay_sensitivity_PCR();
+    } else {
+        return temporal_assay_sensitivity_RDT();
+    }
+}
+
+Eigen::MatrixXf Simulation::temporal_assay_sensitivity_PCR() {
     Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase(states_mean_no_intervention);
     Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(states_best_no_intervention);
     Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(states_worst_no_intervention);
@@ -185,7 +193,42 @@ Eigen::MatrixXf Simulation::temporal_assay_sensitivity() {
     return p_detectable;
 }
 
+Eigen::MatrixXf Simulation::temporal_assay_sensitivity_RDT() {
+    Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase_RDT(states_mean_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase_RDT(states_best_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase_RDT(states_worst_no_intervention);
+
+    // needed for scaling if initial population (probability) != 1.
+    float initial_population = group_by_phase(states_mean_no_intervention)(0, Eigen::seq(0, 3)).sum();
+
+    Eigen::VectorXf p_detectable_mean, p_detectable_best, p_detectable_worst;
+    p_detectable_mean = (1 - test_specificity) * daily_probability_per_phase_mean(Eigen::all, 0) +
+                        test_sensitivity * daily_probability_per_phase_mean(Eigen::all, 1) +
+                        (1 - test_specificity) * daily_probability_per_phase_mean(Eigen::all, 2);
+    p_detectable_best = (1 - test_specificity) * daily_probability_per_phase_best(Eigen::all, 0) +
+                        test_sensitivity * daily_probability_per_phase_best(Eigen::all, 1) +
+                        (1 - test_specificity) * daily_probability_per_phase_best(Eigen::all, 2);
+    p_detectable_worst = (1 - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 0) +
+                         test_sensitivity * daily_probability_per_phase_worst(Eigen::all, 1) +
+                         (1 - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 2);
+
+    Eigen::MatrixXf p_detectable(t_end + 1, 3); // +1 decause of 0-indexed time
+    p_detectable.col(0) = p_detectable_mean.array() / initial_population;
+    p_detectable.col(1) = p_detectable_best.array() / initial_population;
+    p_detectable.col(2) = p_detectable_worst.array() / initial_population;
+
+    return p_detectable;
+}
+
 Eigen::MatrixXf Simulation::test_efficacy() {
+    if (test_type == 0) {
+        return test_efficacy_PCR();
+    } else {
+        return test_efficacy_RDT();
+    }
+}
+
+Eigen::MatrixXf Simulation::test_efficacy_PCR() {
     Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase(states_mean_no_intervention);
     Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase(states_best_no_intervention);
     Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase(states_worst_no_intervention);
@@ -209,8 +252,46 @@ Eigen::MatrixXf Simulation::test_efficacy() {
             (ones - daily_probability_per_phase_best(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
     Eigen::VectorXf p_positive_test_worst =
         (1. - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 0) +
-        test_sensitivity * daily_probability_per_phase_worst(Eigen::all, Eigen::seq(1, 3)).rowwise().sum();
-    +(1. - test_specificity) * (ones - daily_probability_per_phase_worst(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
+        test_sensitivity * daily_probability_per_phase_worst(Eigen::all, Eigen::seq(1, 3)).rowwise().sum() +
+        (1. - test_specificity) *
+            (ones - daily_probability_per_phase_worst(Eigen::all, Eigen::seq(0, 3)).rowwise().sum());
+
+    Eigen::MatrixXf efficacy(t_end + 1, 3); // +1 decause of 0-indexed time
+    efficacy.col(0) = (infectious_mean * test_sensitivity).array() / p_positive_test_mean.array();
+    efficacy.col(1) = (infectious_best * test_sensitivity).array() / p_positive_test_best.array();
+    efficacy.col(2) = (infectious_worst * test_sensitivity).array() / p_positive_test_worst.array();
+
+    return efficacy;
+}
+
+Eigen::MatrixXf Simulation::test_efficacy_RDT() {
+    Eigen::MatrixXf daily_probability_per_phase_mean = group_by_phase_RDT(states_mean_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_best = group_by_phase_RDT(states_best_no_intervention);
+    Eigen::MatrixXf daily_probability_per_phase_worst = group_by_phase_RDT(states_worst_no_intervention);
+
+    // for RDT, detectable == infectious
+    Eigen::VectorXf infectious_mean = daily_probability_per_phase_mean(Eigen::all, 1);
+    Eigen::VectorXf infectious_best = daily_probability_per_phase_best(Eigen::all, 1);
+    Eigen::VectorXf infectious_worst = daily_probability_per_phase_worst(Eigen::all, 1);
+
+    Eigen::VectorXf ones(daily_probability_per_phase_mean.rows());
+    ones.fill(1);
+
+    Eigen::VectorXf p_positive_test_mean =
+        (1. - test_specificity) * daily_probability_per_phase_mean(Eigen::all, 0) +
+        test_sensitivity * daily_probability_per_phase_mean(Eigen::all, 1) +
+        (1. - test_specificity) *
+            (ones - daily_probability_per_phase_mean(Eigen::all, Eigen::seq(0, 1)).rowwise().sum());
+    Eigen::VectorXf p_positive_test_best =
+        (1. - test_specificity) * daily_probability_per_phase_best(Eigen::all, 0) +
+        test_sensitivity * daily_probability_per_phase_best(Eigen::all, 1) +
+        (1. - test_specificity) *
+            (ones - daily_probability_per_phase_best(Eigen::all, Eigen::seq(0, 1)).rowwise().sum());
+    Eigen::VectorXf p_positive_test_worst =
+        (1. - test_specificity) * daily_probability_per_phase_worst(Eigen::all, 0) +
+        test_sensitivity * daily_probability_per_phase_worst(Eigen::all, 1) +
+        (1. - test_specificity) *
+            (ones - daily_probability_per_phase_worst(Eigen::all, Eigen::seq(0, 1)).rowwise().sum());
 
     Eigen::MatrixXf efficacy(t_end + 1, 3); // +1 decause of 0-indexed time
     efficacy.col(0) = (infectious_mean * test_sensitivity).array() / p_positive_test_mean.array();
@@ -314,6 +395,30 @@ Eigen::MatrixXf Simulation::group_by_phase(Eigen::MatrixXf states) {
             states(Eigen::all, Eigen::seq(counter, counter + Model::sub_compartments.at(i) - 1)).rowwise().sum();
         counter = counter + Model::sub_compartments.at(i);
     }
+
+    if (transpose) { // if states was a column vector, return as column vector
+        grouped.transposeInPlace();
+    }
+    return grouped;
+}
+
+Eigen::MatrixXf Simulation::group_by_phase_RDT(Eigen::MatrixXf states) {
+
+    int n_eval = states.rows();
+
+    int transpose = false;
+    if (states.cols() == 1) { // states is a column vector
+        states.transposeInPlace();
+        n_eval = 1;
+        transpose = true;
+    }
+
+    Eigen::MatrixXf grouped(n_eval, 4);
+
+    grouped(Eigen::all, 0) = states(Eigen::all, Eigen::seq(0, 3 + 2 - 1)).rowwise().sum();            // pre-detectable
+    grouped(Eigen::all, 1) = states(Eigen::all, Eigen::seq(5, 5 + 1 + (13 - 5) - 1)).rowwise().sum(); // detectable
+    grouped(Eigen::all, 2) = states(Eigen::all, Eigen::seq(14, 14 + 5 + 1 - 1)).rowwise().sum();      // post-detectable
+    grouped(Eigen::all, 3) = states(Eigen::all, 20);                                                  // sink
 
     if (transpose) { // if states was a column vector, return as column vector
         grouped.transposeInPlace();

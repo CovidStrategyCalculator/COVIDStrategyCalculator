@@ -10,12 +10,10 @@ on this model, the software allows to evaluate the efficacy of user-defined, arb
 pharmaceutical interventions (NPIs) and testing strategies in reducing the transmission
 potential in different contexts.
 
-**The web version of the COVIDStrategyCalculator can be found
-[here](https://CovidStrategyCalculator.github.io)**
+**The COVIDStrategyCalculator can be found
+[here](https://CovidStrategyCalculator.github.io). OPEN IN A PRIVATE BROWSER!** or delete your browser history for the website https://CovidStrategyCalculator.github.io regularly. This is important. 
+The web version is best used on a full-sized screen (desktop/laptop). 
 (Impressum: [here](https://CovidStrategyCalculator.github.io/impressum.html)).
-The web version is best used on a full-sized screen (desktop/laptop). To ensure that you're
-are running the latest version, we recommend that you clear your browser's cache for this
-website regularly.
 
 If you have any questions or remarks, please open an issue or contact us via
 [email](kleistm@rki.de).
@@ -128,12 +126,6 @@ shows the model parameter input tab. Uncertainty ranges are calculated based on 
 parameter values provided by the user (15). The percentage of asymptomatic cases also be
 defined by the user (16).
 
-## Pre-compiled executables
-You can download the COVIDStrategyCalculator as a pre-compiled executable.
-These binaries are updated less often than the web version. We recommend to use the web
-version.
-You can find the latest builds [here](https://github.com/CovidStrategyCalculator/COVIDStrategyCalculator/releases).
-
 ## Building from source
 The COVIDStrategyCalculator application can be compiled from source using the Qt5 framework.
 COVIDStrategyCalculator requires the Eigen 3.3.7 library which is included as a submodule.
@@ -153,7 +145,5 @@ Other versions of these two libraries might work, but have not been tested.
 
 -------------
 ### References
-[1].  COVIDStrategyCalculator: A standalone software to assess testing- and quarantine 
-strategies for incoming travelers, contact person management and de-isolation.
-Wiep van der Toorn, Djin-Ye Oh, Daniel Bourquain, Janine Michel, Eva Krause, Andreas Nitsche,
-Max von Kleist. medRxiv 2020.11.18.20233825; doi: https://doi.org/10.1101/2020.11.18.20233825
+
+[1] W. van der Toorn, D.-Y. Oh, and M. von Kleist, “COVIDStrategyCalculator: A software to assess testing and quarantine strategies for incoming travelers, contact management, and de-isolation,” Patterns, vol. 2, no. 6, p. 100264, Jun. 2021, doi: 10.1016/j.patter.2021.100264.

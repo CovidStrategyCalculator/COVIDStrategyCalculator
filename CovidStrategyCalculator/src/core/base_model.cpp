@@ -23,7 +23,7 @@
 #include "include/core/base_model.h"
 #include <unsupported/Eigen/MatrixFunctions>
 
-const std::vector<int> BaseModel::sub_compartments = {5, 1, 13, 1, 1}; // number of sub compartments per phase
+const std::vector<int> BaseModel::sub_compartments = {3, 3, 13, 1, 1}; // number of sub compartments per phase
 const int BaseModel::n_compartments = 21;                              // sum of sub compartments
 
 // constructor

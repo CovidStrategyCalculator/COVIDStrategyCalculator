@@ -25,20 +25,28 @@
 #include "include/core/model.h"
 
 Model::Model(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
-             Eigen::VectorXf initial_states, int time, std::vector<int> test_indices, float test_sensitivity,
-             float test_specificity)
+             Eigen::VectorXf initial_states, int time, std::vector<int> test_indices, int type_of_test,
+             float test_sensitivity, float test_specificity)
     : BaseModel(residence_times, risk_posing_fraction_symptomatic_phase, initial_states) {
     t_end = time;
     t_test = test_indices;
+    test_type = type_of_test;
     sensitivity = test_sensitivity;
     specificity = test_specificity;
     set_false_ommision_rate();
 }
 
 Model::Model(std::vector<float> residence_times, Eigen::VectorXf initial_states, int time)
-    : Model(residence_times, 1, initial_states, time, {}, .8, .999){};
+    : Model(residence_times, 1, initial_states, time, {}, 0, .8, .999){};
 
 void Model::set_false_ommision_rate() {
+    if (this->test_type == 0) {
+        set_false_ommision_rate_PCR();
+    } else
+        set_false_ommision_rate_RDT();
+}
+
+void Model::set_false_ommision_rate_PCR() {
     Eigen::VectorXf FOR(Model::n_compartments);
     FOR.fill(1.);
 
@@ -49,6 +57,27 @@ void Model::set_false_ommision_rate() {
     }
     for (int j = 0; j < sub_compartments[1] + sub_compartments[2]; ++j) {
         FOR[counter] = 1 - sensitivity;
+        counter++;
+    }
+
+    false_ommision_rate = FOR;
+}
+
+void Model::set_false_ommision_rate_RDT() {
+    Eigen::VectorXf FOR(Model::n_compartments);
+    FOR.fill(1.);
+
+    int counter = 0;
+    for (int j = 0; j < sub_compartments[0] + 2; ++j) {
+        FOR[counter] = specificity;
+        counter++;
+    }
+    for (int j = 0; j < sub_compartments[1] - 2 + sub_compartments[2] - 5; ++j) {
+        FOR[counter] = 1 - sensitivity;
+        counter++;
+    }
+    for (int j = 0; j < 5; ++j) {
+        FOR[counter] = specificity;
         counter++;
     }
 

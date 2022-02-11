@@ -34,17 +34,21 @@ class Model : public BaseModel {
     int t_end{};               // time point marking end of NPI
     std::vector<int> t_test{}; // time points at which to perform a diagnostic test
 
+    int test_type;                       // PCR=0, RDT=1
     float specificity{};                 // specificity of diagnostic test
     float sensitivity{};                 // sensitivity of diagnostic test
     Eigen::VectorXf false_ommision_rate; // compartment dependent false ommision rates
     void set_false_ommision_rate();
+    void set_false_ommision_rate_PCR();
+    void set_false_ommision_rate_RDT();
 
     Eigen::MatrixXf run_no_test(int time); // run the model without tests
 
   public:
     Model() = default; // constructor
     Model(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
-          Eigen::VectorXf initial_states, int time, std::vector<int> test_indices, float test_sensitivity,
+          Eigen::VectorXf initial_states, int time, std::vector<int> test_indices, int test_type,
+          float test_sensitivity,
           float test_specificity); // constructor
     ~Model() = default;            // destructor
 

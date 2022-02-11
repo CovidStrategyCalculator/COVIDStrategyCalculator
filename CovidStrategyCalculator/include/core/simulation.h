@@ -49,7 +49,11 @@ class Simulation {
     Eigen::VectorXf evaluation_points_without_tests(); // time course without conducting defined tests
 
     Eigen::MatrixXf temporal_assay_sensitivity(); // for plot
-    Eigen::MatrixXf test_efficacy();              // for efficacy table
+    Eigen::MatrixXf temporal_assay_sensitivity_PCR();
+    Eigen::MatrixXf temporal_assay_sensitivity_RDT(); // for plot
+    Eigen::MatrixXf test_efficacy();                  // for efficacy table
+    Eigen::MatrixXf test_efficacy_PCR();
+    Eigen::MatrixXf test_efficacy_RDT();
 
     // getter functions
     int get_mode() { return mode; }
@@ -124,4 +128,5 @@ class Simulation {
 
     // matrices grouped by phase are used in the prevalence estimator and daily probabilities
     Eigen::MatrixXf group_by_phase(Eigen::MatrixXf states);
+    Eigen::MatrixXf group_by_phase_RDT(Eigen::MatrixXf states);
 };

@@ -28,8 +28,8 @@
 class BaseModel {
 
   public:
-    static const std::vector<int> sub_compartments; //{5, 1, 13, 1, 1} defined in cpp
-    static const int n_compartments;                // 5+1+13+1+1 = 21
+    static const std::vector<int> sub_compartments; //{3, 3, 13, 1, 1} defined in cpp
+    static const int n_compartments;                // 3+3+13+1+1 = 21
 
     BaseModel() = default; // constructor
     BaseModel(std::vector<float> residence_times, float risk_posing_fraction_symptomatic_phase,
